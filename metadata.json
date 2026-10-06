@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Remix cc106-proj",
+  "description": "Imported from GitHub",
+  "requestFramePermissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

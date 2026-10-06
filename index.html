@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Enterprise HR Document Management System with AES-256-GCM encryption, three-tier role architecture, dynamic category management, file version replacement, dedicated archive module, and granular permission controls.">
+    <title>SecureHR — Employee Document Management System | Bestlink College of the Philippines</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <div class="login-page">
+        <!-- Left Panel: Login Form -->
+        <div class="login-left">
+            <div class="login-left-inner">
+
+                <!-- Logo Area -->
+                <div class="logo-area">
+                    <div class="logo-placeholder">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Bestlink College of the Philippines</span>
+                </div>
+
+                <h1 class="login-heading">Sign in</h1>
+
+                <!-- Role Selector Tabs -->
+                <div class="role-tabs three-tier" role="tablist" aria-label="Select login role">
+                    <button class="role-tab active" data-role="system_admin" role="tab" aria-selected="true" id="tab-system-admin">
+                        <span class="tab-icon">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="vertical-align: -2px;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        </span>Sys Admin
+                    </button>
+                    <button class="role-tab" data-role="hr_admin" role="tab" aria-selected="false" id="tab-hr-admin">
+                        <span class="tab-icon">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="vertical-align: -2px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                        </span>HR Admin
+                    </button>
+                    <button class="role-tab" data-role="hr_staff" role="tab" aria-selected="false" id="tab-hr-staff">
+                        <span class="tab-icon">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="vertical-align: -2px;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </span>HR Staff
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form class="login-form" id="loginForm" novalidate>
+                    <input type="hidden" id="roleInput" name="role" value="system_admin">
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label class="form-label" for="username">
+                            Username <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input
+                                type="text"
+                                class="form-input"
+                                id="username"
+                                name="username"
+                                placeholder="Enter email or employee ID"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                        <div class="validation-msg" id="usernameError">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            Username is required
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">
+                            Password <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input
+                                type="password"
+                                class="form-input"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                                <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg class="eye-closed" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="validation-msg" id="passwordError">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            Password is required
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe" name="remember">
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot Password?</a>
+                    </div>
+
+                    <!-- Sign In Button -->
+                    <button type="submit" class="btn-signin" id="signinBtn">
+                        <span class="btn-text">Sign In</span>
+                    </button>
+
+                    <!-- Role Indicator -->
+                    <p class="role-indicator" id="roleIndicator">
+                        Signing in as <span>System Administrator</span>
+                    </p>
+                </form>
+
+                <!-- Quick Demo Accounts -->
+                <div class="demo-accounts-card" style="margin-top:24px;padding:16px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius-md);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                        <span style="font-size:0.75rem;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.8px;">Quick Role Access &amp; Demo Accounts</span>
+                        <span style="font-size:0.7rem;color:var(--gray-500);background:var(--white);padding:2px 8px;border-radius:var(--radius-full);border:1px solid var(--gray-200);">Click to auto-fill</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <!-- Sys Admin -->
+                        <button type="button" class="demo-role-btn" data-role="system_admin" data-user="admin@bestlink.edu.ph" data-pass="admin123" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;text-align:left;transition:var(--transition);width:100%;">
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:700;color:var(--primary-dark);">System Administrator (Sys Admin)</div>
+                                <div style="font-size:0.75rem;color:var(--gray-500);margin-top:2px;"><code>admin@bestlink.edu.ph</code> &bull; Pass: <code>admin123</code></div>
+                            </div>
+                            <span style="font-size:0.72rem;font-weight:600;color:var(--accent);background:rgba(79,70,229,0.08);padding:3px 8px;border-radius:4px;white-space:nowrap;">Auto-fill &rarr;</span>
+                        </button>
+                        <!-- HR Admin -->
+                        <button type="button" class="demo-role-btn" data-role="hr_admin" data-user="hr.admin@bestlink.edu.ph" data-pass="admin123" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;text-align:left;transition:var(--transition);width:100%;">
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:700;color:var(--primary-dark);">HR Administrator (HR Admin)</div>
+                                <div style="font-size:0.75rem;color:var(--gray-500);margin-top:2px;"><code>hr.admin@bestlink.edu.ph</code> &bull; Pass: <code>admin123</code></div>
+                            </div>
+                            <span style="font-size:0.72rem;font-weight:600;color:var(--accent);background:rgba(79,70,229,0.08);padding:3px 8px;border-radius:4px;white-space:nowrap;">Auto-fill &rarr;</span>
+                        </button>
+                        <!-- HR Staff -->
+                        <button type="button" class="demo-role-btn" data-role="hr_staff" data-user="juan.delacruz@bestlink.edu.ph" data-pass="employee123" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;text-align:left;transition:var(--transition);width:100%;">
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:700;color:var(--primary-dark);">HR Staff / Employee (HR Staff)</div>
+                                <div style="font-size:0.75rem;color:var(--gray-500);margin-top:2px;"><code>juan.delacruz@bestlink.edu.ph</code> &bull; Pass: <code>employee123</code></div>
+                            </div>
+                            <span style="font-size:0.72rem;font-weight:600;color:var(--accent);background:rgba(79,70,229,0.08);padding:3px 8px;border-radius:4px;white-space:nowrap;">Auto-fill &rarr;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                &copy; 2026 SecureHR — Bestlink College of the Philippines. All rights reserved.
+            </div>
+        </div>
+
+        <!-- Right Panel: Background Graphic Only -->
+        <div class="login-right">
+            <div class="curve-1"></div>
+            <div class="curve-2"></div>
+            <div class="curve-3"></div>
+
+            <div class="dot-pattern dot-pattern-1" aria-hidden="true">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="dot-pattern dot-pattern-2" aria-hidden="true">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+        </div>
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotModal" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-header-icon" style="background:rgba(37,99,235,0.1); color:#2563EB; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zM9 7a3 3 0 0 1 6 0v3H9V7z"/></svg>
+                </div>
+                <div style="flex:1;">
+                    <h3 class="modal-title" style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-primary, #111827);">Password Recovery</h3>
+                    <p class="modal-subtitle" style="margin:4px 0 0 0; font-size:0.82rem; color:var(--text-secondary, #6B7280);">Enter your institutional email or Employee ID to generate a temporary key.</p>
+                </div>
+                <button type="button" class="modal-close" id="closeForgotModal" style="background:none; border:none; font-size:1.5rem; color:#9CA3AF; cursor:pointer; padding:0 4px;">&times;</button>
+            </div>
+            <form id="forgotForm" style="margin-top:16px;">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label class="form-label" for="forgotInput" style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600; color:#374151;">Email or Employee ID</label>
+                    <input type="text" class="form-input" id="forgotInput" placeholder="e.g. juan.delacruz@bestlink.edu.ph or EMP-001" required style="width:100%; box-sizing:border-box;">
+                </div>
+                <div id="forgotResult" style="display:none; margin-top:12px; padding:12px; border-radius:8px; font-size:0.85rem; line-height:1.4;"></div>
+                <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" class="btn-cancel" id="cancelForgotBtn" style="padding:8px 16px; border:1px solid #D1D5DB; background:#fff; border-radius:8px; font-size:0.85rem; cursor:pointer; font-weight:600; color:#4B5563;">Cancel</button>
+                    <button type="submit" class="btn-signin" id="submitForgotBtn" style="padding:8px 18px; width:auto; margin:0; border-radius:8px; font-size:0.85rem; font-weight:600;">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
