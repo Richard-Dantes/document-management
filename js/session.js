@@ -88,7 +88,7 @@ const SecureHRSession = (() => {
                 actorId: user.id,
                 action: 'LOGOUT',
                 target: '-',
-                details: `${user.role === 'admin' ? 'Admin' : 'Employee'} logged out`,
+                details: `${(user.role === 'system_admin' || user.role === 'hr_admin' || user.role === 'admin') ? 'Admin' : 'Employee'} logged out`,
             });
         }
 

@@ -54,11 +54,6 @@
                     <span class="nav-label">Documents</span>
                     <span class="nav-badge" id="docCount">0</span>
                 </button>
-                <button class="nav-item" data-section="section-categories" id="nav-categories">
-                    <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zm-7-2h2v-3h3V9h-3V6h-2v3H9v2h3v3z"/></svg>
-                    <span class="nav-label">Categories</span>
-                    <span class="nav-badge" id="catCount">6</span>
-                </button>
                 <button class="nav-item" data-section="section-archive" id="nav-archive">
                     <svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/></svg>
                     <span class="nav-label">Archive</span>
@@ -153,15 +148,6 @@
                             <p>Active Documents</p>
                         </div>
                     </div>
-                    <div class="stat-card" data-section="section-categories" role="button" tabindex="0">
-                        <div class="stat-icon green">
-                            <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zm-7-2h2v-3h3V9h-3V6h-2v3H9v2h3v3z"/></svg>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalCategoriesCount">6</h3>
-                            <p>Document Categories</p>
-                        </div>
-                    </div>
                     <div class="stat-card" data-section="section-archive" role="button" tabindex="0">
                         <div class="stat-icon orange">
                             <svg viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/></svg>
@@ -173,22 +159,6 @@
                     </div>
                 </div>
 
-                <!-- Visual Analytics: Documents by Category Breakdown -->
-                <div class="cat-breakdown-card" style="margin-bottom:24px;">
-                    <div class="cat-breakdown-header">
-                        <div>
-                            <h3 style="font-size:1.05rem;font-weight:700;color:var(--gray-900);">Documents by Category &amp; Repository Distribution</h3>
-                            <p style="font-size:0.8rem;color:var(--gray-500);margin:2px 0 0 0;">Standard research paper classifications across faculty &amp; personnel records</p>
-                        </div>
-                        <button type="button" class="btn-secondary btn-sm" onclick="showSection('section-categories')">
-                            Manage Categories
-                        </button>
-                    </div>
-                    <div id="overviewCategoryBreakdown">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
                 <!-- Two-Column Visual Widgets: Recently Uploaded & Recently Accessed -->
                 <div class="analytics-dashboard-grid">
                     <!-- Recently Uploaded Documents -->
@@ -196,7 +166,6 @@
                         <div class="content-card-header">
                             <div>
                                 <h3 style="font-size:0.95rem;font-weight:700;">Recently Uploaded Documents</h3>
-                                <p style="font-size:0.75rem;color:var(--gray-500);margin:2px 0 0 0;">Latest additions to the encrypted institutional repository</p>
                             </div>
                             <button type="button" class="btn-secondary btn-sm" onclick="showSection('section-documents')">View All</button>
                         </div>
@@ -211,8 +180,7 @@
                     <div class="content-card">
                         <div class="content-card-header">
                             <div>
-                                <h3 style="font-size:0.95rem;font-weight:700;">Recently Accessed &amp; Verified Records</h3>
-                                <p style="font-size:0.75rem;color:var(--gray-500);margin:2px 0 0 0;">Activity trace for confidentiality compliance</p>
+                                <h3 style="font-size:0.95rem;font-weight:700;">Recent Activity</h3>
                             </div>
                             <button type="button" class="btn-secondary btn-sm" onclick="showSection('section-audit')">Audit Log</button>
                         </div>
@@ -224,48 +192,6 @@
                     </div>
                 </div>
 
-                <!-- System Security Status Card -->
-                <div class="content-card" style="margin-bottom:24px;">
-                    <div class="content-card-header">
-                        <h3>System Security &amp; Compliance</h3>
-                        <span style="font-size:0.78rem;font-weight:600;color:#059669;display:inline-flex;align-items:center;gap:6px;">
-                            <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
-                            All Security Layers Active
-                        </span>
-                    </div>
-                    <div class="content-card-body">
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;">
-                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--gray-200);border-radius:var(--radius-md);background:var(--gray-50);">
-                                <svg viewBox="0 0 20 20" width="18" height="18" fill="#10B981"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                <div>
-                                    <div style="font-size:0.85rem;font-weight:600;color:var(--gray-800);">AES-256-GCM</div>
-                                    <div style="font-size:0.75rem;color:var(--gray-500);">Document Encryption</div>
-                                </div>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--gray-200);border-radius:var(--radius-md);background:var(--gray-50);">
-                                <svg viewBox="0 0 20 20" width="18" height="18" fill="#10B981"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                <div>
-                                    <div style="font-size:0.85rem;font-weight:600;color:var(--gray-800);">Bcrypt Hashing</div>
-                                    <div style="font-size:0.75rem;color:var(--gray-500);">Credential Protection</div>
-                                </div>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--gray-200);border-radius:var(--radius-md);background:var(--gray-50);">
-                                <svg viewBox="0 0 20 20" width="18" height="18" fill="#10B981"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                <div>
-                                    <div style="font-size:0.85rem;font-weight:600;color:var(--gray-800);">Role-Based RBAC</div>
-                                    <div style="font-size:0.75rem;color:var(--gray-500);">Access Control</div>
-                                </div>
-                            </div>
-                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--gray-200);border-radius:var(--radius-md);background:var(--gray-50);">
-                                <svg viewBox="0 0 20 20" width="18" height="18" fill="#10B981"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                <div>
-                                    <div style="font-size:0.85rem;font-weight:600;color:var(--gray-800);">Audit Logging</div>
-                                    <div style="font-size:0.75rem;color:var(--gray-500);">Activity Tracing</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </section>
 
@@ -274,22 +200,6 @@
                 <div class="page-header">
                     <h2 id="usersSectionTitle">User Management</h2>
                     <p id="usersSectionDesc">Create and manage HR employee accounts. All accounts are protected with role-based access control.</p>
-                </div>
-
-                <!-- HR Admin Restriction Alert Banner (Shown only for HR Admin) -->
-                <div id="hrAdminUserRestrictionBanner" style="display:none;margin-bottom:20px;padding:14px 18px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--radius-md);align-items:flex-start;gap:14px;">
-                    <div style="width:36px;height:36px;border-radius:8px;background:#2563EB;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-size:0.9rem;font-weight:700;color:#1E40AF;display:flex;align-items:center;gap:8px;">
-                            <span>Employee Directory &bull; Read-Only Compliance View</span>
-                            <span style="font-size:0.72rem;background:#DBEAFE;color:#1E40AF;padding:2px 8px;border-radius:4px;font-weight:600;">HR Admin Access</span>
-                        </div>
-                        <p style="font-size:0.82rem;color:#1E3A8A;margin:4px 0 0 0;line-height:1.5;">
-                            As an HR Administrator, you can review institutional personnel profiles and click on any employee to inspect their associated document records. User provisioning, role assignment, password resets, and permission configuration are strictly restricted to <strong>System Administrators</strong>.
-                        </p>
-                    </div>
                 </div>
 
                 <!-- Users Table Card -->
@@ -312,11 +222,6 @@
                                 <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                                 Create Account
                             </button>
-                            <!-- Read-only badge for HR Admin -->
-                            <div id="hrAdminUserNoticeBadge" style="display:none;padding:6px 12px;background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;font-size:0.8rem;font-weight:600;color:#475569;align-items:center;gap:6px;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-                                Managed by System Admin
-                            </div>
                         </div>
                     </div>
 
@@ -481,49 +386,11 @@
                 </div>
             </section>
 
-            <!-- SECTION: Categories Management -->
-            <section class="page-section hidden" id="section-categories">
-                <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
-                    <div>
-                        <h2>Document Categories Management</h2>
-                        <p>Configure research paper classifications and dynamic document types across Bestlink HR records.</p>
-                    </div>
-                    <button class="btn-primary" id="btnAddCategory">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        Add Category
-                    </button>
-                </div>
-
-                <div class="content-card">
-                    <div class="content-card-header">
-                        <h3>Repository Categories</h3>
-                        <div style="font-size:0.8rem;color:var(--gray-500);">
-                            Categories dynamically organize all employee records with cryptographic separation.
-                        </div>
-                    </div>
-                    <div class="content-card-body" style="padding:20px;">
-                        <div class="categories-grid" id="categoriesGrid">
-                            <!-- Rendered by JS -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- SECTION: Dedicated Archive Module -->
             <section class="page-section hidden" id="section-archive">
                 <div class="page-header">
-                    <h2>Document Archive Repository</h2>
-                    <p>Protected retention vault for historical, completed, and retired personnel records with instant one-click restoration.</p>
-                </div>
-
-                <div class="archive-banner">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="flex-shrink:0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    <div>
-                        <strong style="font-size:0.9rem;">Protected Institutional Archive Vault</strong>
-                        <div style="font-size:0.82rem;margin-top:2px;">
-                            Archived records remain AES-256 encrypted and tamper-evident. Documents cannot be modified while archived. Click <strong>Restore to Active</strong> at any time to return any file to active document circulation.
-                        </div>
-                    </div>
+                    <h2>Archive</h2>
+                    <p>Archived documents. Click Restore to move a document back to the active list.</p>
                 </div>
 
                 <div class="content-card">
@@ -575,7 +442,7 @@
             <section class="page-section hidden" id="section-audit">
                 <div class="page-header">
                     <h2>Audit Log</h2>
-                    <p>A chronological record of all actions performed in the system for accountability and compliance.</p>
+                    <p>List of actions performed in the system.</p>
                 </div>
 
                 <div class="content-card">
@@ -782,11 +649,11 @@
 
                 <!-- Role Selection (Three-Tier Role Architecture) -->
                 <div class="form-group">
-                    <label class="form-label" for="empRole">Three-Tier System Role <span style="color:var(--error)">*</span></label>
+                    <label class="form-label" for="empRole">Role <span style="color:var(--error)">*</span></label>
                     <select class="form-input form-select" id="empRole" required>
-                        <option value="system_admin">System Administrator (Full System Config, User Permissions, Audits)</option>
-                        <option value="hr_admin">HR Administrator (Document Verifications, Category Management, Archiving)</option>
-                        <option value="hr_staff">HR Staff (Uploads, Document Processing, Self-Records)</option>
+                        <option value="system_admin">System Administrator</option>
+                        <option value="hr_admin">HR Administrator</option>
+                        <option value="hr_staff">HR Staff</option>
                     </select>
                     <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">
                         Selecting a role presets recommended permissions below. You can customize permissions individually for this account.
@@ -796,7 +663,7 @@
                 <!-- Granular Permissions Checklist -->
                 <div class="form-group">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                        <label class="form-label" style="margin-bottom:0;">Granular System Permissions</label>
+                        <label class="form-label" style="margin-bottom:0;">Permissions</label>
                         <div style="display:flex;gap:8px;">
                             <button type="button" id="btnPermSelectAll" style="font-size:0.73rem;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;padding:0;">Select All</button>
                             <span style="color:var(--gray-300);">|</span>
@@ -841,13 +708,6 @@
                                 </div>
                             </label>
                             <label class="permission-checkbox-card">
-                                <input type="checkbox" id="perm_can_manage_categories">
-                                <div class="permission-checkbox-label">
-                                    <strong>Manage Categories</strong>
-                                    <small>Add, edit, or delete document categories</small>
-                                </div>
-                            </label>
-                            <label class="permission-checkbox-card">
                                 <input type="checkbox" id="perm_can_delete_docs">
                                 <div class="permission-checkbox-label">
                                     <strong>Delete Documents</strong>
@@ -881,21 +741,24 @@
                     </select>
                 </div>
 
-                <!-- Password -->
-                <div class="form-group">
-                    <label class="form-label" for="empPassword">
-                        Temporary Password
-                        <button type="button" id="btnRegenPass" style="margin-left:8px;font-size:0.75rem;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-family:inherit;">↻ Regenerate</button>
-                    </label>
-                    <input type="text" class="form-input" id="empPassword" placeholder="Auto-generated or enter manually">
-                    <!-- Generated Password Display -->
-                    <div class="generated-password hidden" id="generatedPasswordDisplay">
-                        <code id="generatedPasswordCode">----------</code>
-                        <button type="button" class="copy-btn" id="btnCopyPass" title="Copy password">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                        </button>
+                <!-- Security Credentials Row: Password & PIN (Admin Controlled) -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="empPassword">
+                            Account Password
+                            <button type="button" id="btnRegenPass" style="margin-left:8px;font-size:0.75rem;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-family:inherit;">↻ Auto-Gen</button>
+                        </label>
+                        <input type="text" class="form-input" id="empPassword" placeholder="Auto-generated or custom password">
+                        <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Login password managed by HR / System Admin.</div>
                     </div>
-                    <div style="font-size:0.75rem;color:var(--gray-400);margin-top:4px;">The employee must change this password on first login.</div>
+                    <div class="form-group">
+                        <label class="form-label" for="empPin">
+                            Security PIN (4 Digits)
+                            <button type="button" id="btnRegenPin" style="margin-left:8px;font-size:0.75rem;font-weight:600;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-family:inherit;">↻ Auto-Gen</button>
+                        </label>
+                        <input type="text" class="form-input" id="empPin" maxlength="6" placeholder="e.g. 1234">
+                        <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Required for employee to decrypt &amp; access files.</div>
+                    </div>
                 </div>
 
             </form>
@@ -904,30 +767,76 @@
             <button class="btn-secondary" id="btnCancelModal">Cancel</button>
             <button class="btn-primary" id="btnSubmitModal">Create Account</button>
         </div>
+    </div>
 </div>
 
-<!-- ADMIN RESET PASSWORD MODAL -->
+<!-- ADMIN RESET CREDENTIALS (PASSWORD & PIN) MODAL -->
 <div class="modal-overlay" id="adminResetModal" role="dialog" aria-modal="true" aria-labelledby="adminResetModalTitle">
-    <div class="modal" style="max-width: 480px;">
+    <div class="modal" style="max-width: 520px;">
         <div class="modal-header">
-            <h3 id="adminResetModalTitle">Temporary Password Reset</h3>
-            <button class="modal-close" id="btnCloseAdminResetModal" aria-label="Close modal">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            </button>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:10px;background:rgba(37,99,235,0.1);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+                </div>
+                <div>
+                    <h3 id="adminResetModalTitle" style="margin:0;font-size:1.1rem;">Reset Credentials &amp; Security PIN</h3>
+                    <p style="font-size:0.75rem;color:var(--gray-500);margin:2px 0 0;" id="adminResetSubtitle">Set new login password &amp; document PIN</p>
+                </div>
+            </div>
+            <button class="modal-close" id="btnCloseAdminResetModal" aria-label="Close modal">&times;</button>
         </div>
         <div class="modal-body">
-            <p id="adminResetMessage" style="font-size:0.9rem;color:var(--gray-700);margin-bottom:16px;">A new temporary password has been generated for this employee:</p>
-            <div class="generated-password" style="display:flex;align-items:center;justify-content:space-between;background:var(--gray-100);padding:12px 16px;border-radius:var(--radius-md);border:1px solid var(--gray-300);">
-                <code id="adminResetPasswordCode" style="font-size:1.1rem;font-weight:700;letter-spacing:1px;color:var(--accent);">----------</code>
-                <button type="button" class="copy-btn" id="btnAdminCopyResetPass" title="Copy password" style="background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius-sm);padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--gray-700);">
-                    <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                    <span>Copy</span>
-                </button>
+            <input type="hidden" id="adminResetTargetEmpId">
+
+            <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:16px;">
+                <div style="font-size:0.75rem;color:var(--gray-500);text-transform:uppercase;font-weight:700;letter-spacing:0.5px;">Target Employee</div>
+                <div style="font-weight:700;color:var(--gray-900);font-size:1rem;margin-top:2px;" id="adminResetEmpName">—</div>
+                <div style="font-size:0.82rem;color:var(--gray-600);" id="adminResetEmpEmail">—</div>
             </div>
-            <p style="font-size:0.8rem;color:var(--gray-500);margin-top:12px;">Please share this temporary password securely with the employee. They will be required to change it on their next login.</p>
+
+            <!-- New Password Field -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <label class="form-label" for="adminResetNewPassword" style="margin-bottom:0;">New Password</label>
+                    <div style="display:flex;gap:8px;">
+                        <button type="button" id="btnAdminGenResetPass" style="font-size:0.75rem;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;padding:0;">↻ Generate Random</button>
+                        <span style="color:var(--gray-300);">|</span>
+                        <button type="button" id="btnAdminCopyPassOnly" style="font-size:0.75rem;color:var(--gray-600);background:none;border:none;cursor:pointer;font-weight:600;padding:0;">📋 Copy</button>
+                    </div>
+                </div>
+                <input type="text" class="form-input" id="adminResetNewPassword" placeholder="Enter new password or click Generate" style="font-family:monospace;font-weight:600;">
+            </div>
+
+            <!-- New Security PIN Field -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <label class="form-label" for="adminResetNewPin" style="margin-bottom:0;">New Document Security PIN (4 Digits)</label>
+                    <div style="display:flex;gap:8px;">
+                        <button type="button" id="btnAdminGenResetPin" style="font-size:0.75rem;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;padding:0;">↻ Generate PIN</button>
+                        <span style="color:var(--gray-300);">|</span>
+                        <button type="button" id="btnAdminCopyPinOnly" style="font-size:0.75rem;color:var(--gray-600);background:none;border:none;cursor:pointer;font-weight:600;padding:0;">📋 Copy</button>
+                    </div>
+                </div>
+                <input type="text" class="form-input" id="adminResetNewPin" maxlength="6" placeholder="e.g. 1234 or click Generate" style="font-family:monospace;font-weight:700;letter-spacing:2px;">
+                <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Required by employee to view or download files assigned to them.</div>
+            </div>
+
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;">
+                <svg viewBox="0 0 20 20" fill="#2563EB" width="18" height="18" style="flex-shrink:0;margin-top:1px;"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                <div style="font-size:0.78rem;color:#1E40AF;line-height:1.4;">
+                    Employees do not have authority to change their password or PIN. Share these new credentials securely with the employee via official communication channels (e.g. Messenger, Gmail, or in person).
+                </div>
+            </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn-primary" id="btnDoneAdminResetModal">Done</button>
+        <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+            <button type="button" class="btn-secondary" id="btnAdminCopyAllCredentials" style="display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                Copy All Credentials
+            </button>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-secondary" id="btnCancelAdminResetModal">Cancel</button>
+                <button class="btn-primary" id="btnSaveAdminResetCredentials">Save &amp; Apply</button>
+            </div>
         </div>
     </div>
 </div>
@@ -990,8 +899,7 @@
     <div class="modal" style="max-width: 480px;">
         <div class="modal-header">
             <div>
-                <h3 id="downloadReasonModalTitle">Authorized Document Access</h3>
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-top:2px;">Security &amp; institutional audit reason confirmation</p>
+                <h3 id="downloadReasonModalTitle">Download Document</h3>
             </div>
             <button class="btn-icon" id="btnCloseDownloadReasonModal" aria-label="Close modal">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -1025,8 +933,7 @@
                 <div style="margin-top:14px;padding:12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius-md);display:flex;align-items:flex-start;gap:10px;">
                     <input type="checkbox" id="chkPrintVerificationCover" style="margin-top:3px;cursor:pointer;">
                     <label for="chkPrintVerificationCover" style="font-size:0.82rem;color:var(--gray-700);cursor:pointer;user-select:none;">
-                        <strong>Generate Official Verification Slip</strong>
-                        <div style="font-size:0.75rem;color:var(--gray-500);margin-top:2px;">Print or save an institutional cover sheet with BCP verification stamp &amp; AES-256 integrity seal.</div>
+                        <strong>Print verification slip</strong>
                     </label>
                 </div>
             </form>
@@ -1041,68 +948,12 @@
     </div>
 </div>
 
-<!-- DYNAMIC CATEGORY ADD / EDIT MODAL -->
-<div class="modal-overlay hidden" id="categoryModal" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle">
-    <div class="modal" style="max-width: 520px;">
-        <div class="modal-header">
-            <div>
-                <h3 id="categoryModalTitle">Add Document Category</h3>
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-top:2px;">Organize institutional personnel records</p>
-            </div>
-            <button class="modal-close" id="btnCloseCategoryModal" aria-label="Close modal">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form id="categoryForm" novalidate onsubmit="return false;">
-                <input type="hidden" id="categoryEditId">
-                <div class="form-group">
-                    <label class="form-label" for="categoryNameInput">Category Name <span style="color:var(--error)">*</span></label>
-                    <input type="text" class="form-input" id="categoryNameInput" placeholder="e.g. Performance Records" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="categoryDescInput">Description / Purpose</label>
-                    <textarea class="form-input" id="categoryDescInput" rows="2" placeholder="e.g. Faculty evaluations, IPCR, performance appraisal forms and peer reviews"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="categoryColorInput">Accent Color</label>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <input type="color" id="categoryColorInput" value="#3B82F6" style="width:42px;height:38px;padding:2px;border:1px solid var(--gray-300);border-radius:6px;cursor:pointer;">
-                            <input type="text" class="form-input" id="categoryColorHex" value="#3B82F6" style="flex:1;">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="categoryIconSelect">Icon Representation</label>
-                        <select class="form-input form-select" id="categoryIconSelect">
-                            <option value="folder">Folder (General Records)</option>
-                            <option value="user-badge">User ID (Identity &amp; Profile)</option>
-                            <option value="file-contract">Contract (Employment / Terms)</option>
-                            <option value="award">Award / Star (Performance &amp; KPI)</option>
-                            <option value="academic">Cap / Book (Training &amp; Education)</option>
-                            <option value="document">Document (General File)</option>
-                        </select>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer" style="justify-content: flex-end; gap: 10px;">
-            <button class="btn-secondary" id="btnCancelCategoryModal">Cancel</button>
-            <button class="btn-primary" id="btnSaveCategoryModal">
-                <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                Save Category
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- DIRECT REPLACE DOCUMENT FILE (VERSION REPLACEMENT) MODAL -->
 <div class="modal-overlay hidden" id="replaceVersionModal" role="dialog" aria-modal="true" aria-labelledby="replaceVersionModalTitle">
     <div class="modal" style="max-width: 560px;">
         <div class="modal-header">
             <div>
                 <h3 id="replaceVersionModalTitle">Replace Document File &mdash; New Version</h3>
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-top:2px;">Update document file content while preserving record ID &amp; history</p>
             </div>
             <button class="modal-close" id="btnCloseReplaceVersionModal" aria-label="Close modal">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -1139,7 +990,6 @@
                 <div class="form-group">
                     <label class="form-label" for="replaceVersionNotes">Version Change Notes / Justification <span style="color:var(--gray-400);font-weight:400">(optional)</span></label>
                     <input type="text" class="form-input" id="replaceVersionNotes" placeholder="e.g. Updated signed and notarized renewal contract for AY 2026-2027">
-                    <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Recorded in the immutable version history and security audit trace.</div>
                 </div>
             </form>
         </div>
@@ -1159,7 +1009,6 @@
         <div class="modal-header">
             <div>
                 <h3 id="versionHistoryModalTitle">Document Version History</h3>
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-top:2px;">Complete audit trail of all revisions and replacements</p>
             </div>
             <button class="modal-close" id="btnCloseVersionHistoryModal" aria-label="Close modal">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -1176,6 +1025,51 @@
     </div>
 </div>
 
+<!-- ADMIN IN-BROWSER DOCUMENT PREVIEW / VIEWER MODAL -->
+<div class="modal-overlay hidden" id="adminDocPreviewModal" role="dialog" aria-modal="true" aria-labelledby="adminPreviewTitle" style="display:none;">
+    <div class="modal preview-modal-card" style="max-width: 960px; width: 95vw; height: 88vh; display:flex; flex-direction:column;">
+        <div class="modal-header" style="flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+                <h3 id="adminPreviewTitle" style="font-size:1.05rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Document Preview</h3>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div class="preview-mode-switch" id="adminPreviewModeSwitch">
+                    <button type="button" class="preview-mode-btn active" id="adminBtnModeFull" title="Full clear view">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        Full Unlocked View
+                    </button>
+                    <button type="button" class="preview-mode-btn" id="adminBtnModeSplit" title="Simulate employee split view">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14v6H6c0 3.31 2.69 6 6 6s6-2.69 6-6-2.69-6-6-6z"/></svg>
+                        Split Security Mode
+                    </button>
+                </div>
+                <button class="btn-primary" id="btnAdminPreviewDownload" type="button" style="padding:6px 14px;font-size:0.8rem;display:flex;align-items:center;gap:6px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Download Decrypted File
+                </button>
+                <button class="modal-close" id="btnCloseAdminPreviewModal" aria-label="Close viewer">&times;</button>
+            </div>
+        </div>
+        <div class="modal-body" style="flex:1;overflow:hidden;padding:0;display:flex;flex-direction:column;background:var(--gray-100);">
+            <div class="preview-toolbar" id="adminPreviewMetaBar" style="padding:8px 16px;background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.8rem;color:var(--gray-600);">
+                <div id="adminPreviewDetails" style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;"></div>
+                <div style="font-size:0.75rem;color:var(--gray-500);display:flex;align-items:center;gap:6px;">
+                    <span>AES-256-GCM Decrypted</span>
+                </div>
+            </div>
+            <div class="preview-render-area" id="adminPreviewContent" style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px;background:#0F172A;">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+        <div class="modal-footer" style="flex-shrink:0;justify-content:space-between;">
+            <div style="font-size:0.78rem;color:var(--gray-500);display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#10B981"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                Bestlink College of the Philippines · SecureHR Document Security
+            </div>
+            <button class="btn-secondary" id="btnCloseAdminPreviewBtn" type="button">Close Viewer</button>
+        </div>
+    </div>
+</div>
 
 <script src="js/mammoth.browser.min.js"></script>
 <script src="js/storage.js"></script>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Enterprise HR Document Management System with AES-256-GCM encryption, three-tier role architecture, dynamic category management, file version replacement, dedicated archive module, and granular permission controls.">
-    <title>SecureHR — Employee Document Management System | Bestlink College of the Philippines</title>
+    <meta name="description" content="HR Document Management System">
+    <title>HR System | Bestlink College of the Philippines</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,13 +104,12 @@
                         </div>
                     </div>
 
-                    <!-- Remember Me & Forgot Password -->
+                    <!-- Remember Me -->
                     <div class="form-options">
                         <label class="remember-me">
                             <input type="checkbox" id="rememberMe" name="remember">
                             Remember me
                         </label>
-                        <a href="#" class="forgot-link">Forgot Password?</a>
                     </div>
 
                     <!-- Sign In Button -->
@@ -131,14 +130,6 @@
                         <span style="font-size:0.7rem;color:var(--gray-500);background:var(--white);padding:2px 8px;border-radius:var(--radius-full);border:1px solid var(--gray-200);">Click to auto-fill</span>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:8px;">
-                        <!-- Sys Admin -->
-                        <button type="button" class="demo-role-btn" data-role="system_admin" data-user="admin@bestlink.edu.ph" data-pass="admin123" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;text-align:left;transition:var(--transition);width:100%;">
-                            <div>
-                                <div style="font-size:0.82rem;font-weight:700;color:var(--primary-dark);">System Administrator (Sys Admin)</div>
-                                <div style="font-size:0.75rem;color:var(--gray-500);margin-top:2px;"><code>admin@bestlink.edu.ph</code> &bull; Pass: <code>admin123</code></div>
-                            </div>
-                            <span style="font-size:0.72rem;font-weight:600;color:var(--accent);background:rgba(79,70,229,0.08);padding:3px 8px;border-radius:4px;white-space:nowrap;">Auto-fill &rarr;</span>
-                        </button>
                         <!-- HR Admin -->
                         <button type="button" class="demo-role-btn" data-role="hr_admin" data-user="hr.admin@bestlink.edu.ph" data-pass="admin123" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-sm);cursor:pointer;text-align:left;transition:var(--transition);width:100%;">
                             <div>
@@ -186,32 +177,6 @@
                 <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
                 <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
             </div>
-        </div>
-    <!-- Forgot Password Modal -->
-    <div class="modal-overlay" id="forgotModal" style="display:none;">
-        <div class="modal-box">
-            <div class="modal-header">
-                <div class="modal-header-icon" style="background:rgba(37,99,235,0.1); color:#2563EB; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zM9 7a3 3 0 0 1 6 0v3H9V7z"/></svg>
-                </div>
-                <div style="flex:1;">
-                    <h3 class="modal-title" style="margin:0; font-size:1.1rem; font-weight:700; color:var(--text-primary, #111827);">Password Recovery</h3>
-                    <p class="modal-subtitle" style="margin:4px 0 0 0; font-size:0.82rem; color:var(--text-secondary, #6B7280);">Enter your institutional email or Employee ID to generate a temporary key.</p>
-                </div>
-                <button type="button" class="modal-close" id="closeForgotModal" style="background:none; border:none; font-size:1.5rem; color:#9CA3AF; cursor:pointer; padding:0 4px;">&times;</button>
-            </div>
-            <form id="forgotForm" style="margin-top:16px;">
-                <div class="form-group" style="margin-bottom:12px;">
-                    <label class="form-label" for="forgotInput" style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600; color:#374151;">Email or Employee ID</label>
-                    <input type="text" class="form-input" id="forgotInput" placeholder="e.g. juan.delacruz@bestlink.edu.ph or EMP-001" required style="width:100%; box-sizing:border-box;">
-                </div>
-                <div id="forgotResult" style="display:none; margin-top:12px; padding:12px; border-radius:8px; font-size:0.85rem; line-height:1.4;"></div>
-                <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:8px;">
-                    <button type="button" class="btn-cancel" id="cancelForgotBtn" style="padding:8px 16px; border:1px solid #D1D5DB; background:#fff; border-radius:8px; font-size:0.85rem; cursor:pointer; font-weight:600; color:#4B5563;">Cancel</button>
-                    <button type="submit" class="btn-signin" id="submitForgotBtn" style="padding:8px 18px; width:auto; margin:0; border-radius:8px; font-size:0.85rem; font-weight:600;">Submit Request</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <script src="js/storage.js"></script>

@@ -42,28 +42,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (usersNav) {
             const label = usersNav.querySelector('.nav-label');
             if (label) label.textContent = 'Employee Directory';
-            usersNav.title = 'Employee Directory (Read-Only Compliance View)';
+            usersNav.title = 'Employee Directory';
         }
         const usersTitle = document.getElementById('usersSectionTitle');
         if (usersTitle) usersTitle.textContent = 'Employee Directory';
         const usersDesc = document.getElementById('usersSectionDesc');
-        if (usersDesc) usersDesc.textContent = 'Institutional staff directory and employee records. User account creation, role assignment, and security credentials can only be configured by System Administrators.';
-        const restrictionBanner = document.getElementById('hrAdminUserRestrictionBanner');
-        if (restrictionBanner) restrictionBanner.style.display = 'flex';
+        if (usersDesc) usersDesc.textContent = 'Institutional staff directory and employee records.';
         const cardHeader = document.getElementById('usersCardHeaderTitle');
         if (cardHeader) cardHeader.textContent = 'Institutional Personnel Directory';
 
         const btnAdd = document.getElementById('btnAddUser');
         if (btnAdd) btnAdd.style.display = 'none';
-        const noticeBadge = document.getElementById('hrAdminUserNoticeBadge');
-        if (noticeBadge) noticeBadge.style.display = 'inline-flex';
     } else {
         const usersTitle = document.getElementById('usersSectionTitle');
         if (usersTitle) usersTitle.textContent = 'User & Permission Management';
         const usersDesc = document.getElementById('usersSectionDesc');
         if (usersDesc) usersDesc.textContent = 'System Administration: Provision employee accounts, assign roles, and configure granular cryptographic permissions.';
-        const restrictionBanner = document.getElementById('hrAdminUserRestrictionBanner');
-        if (restrictionBanner) restrictionBanner.style.display = 'none';
         const btnAdd = document.getElementById('btnAddUser');
         if (btnAdd) btnAdd.style.display = 'inline-flex';
     }
@@ -257,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="action-btn edit" title="Edit & Manage Permissions" onclick="editEmployee('${esc(emp.id)}')">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                         </button>
-                        <button class="action-btn edit" title="Reset Temporary Password" onclick="adminResetEmployeePassword('${esc(emp.id)}', '${esc(emp.firstName)} ${esc(emp.lastName)}')">
+                        <button class="action-btn edit" title="Reset Credentials & Security PIN" onclick="adminResetEmployeePassword('${esc(emp.id)}', '${esc(emp.firstName)} ${esc(emp.lastName)}')">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
                         </button>
                         <button class="action-btn delete" title="Delete" onclick="deleteEmployee('${esc(emp.id)}')">
@@ -270,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                             View Files
                         </button>
-                        <span style="font-size:0.72rem;color:var(--gray-500);padding:3px 8px;background:var(--gray-100);border-radius:4px;border:1px solid var(--gray-200);white-space:nowrap;" title="User accounts and credentials are administered by System Administrators">SysAdmin Only</span>
                     </div>
                     `}
                 </td>
@@ -307,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const allDocs = SecureHRStorage.getDocuments();
         const activeDocs = allDocs.filter(d => !d.isArchived && d.status !== 'Archived');
         const archivedDocs = allDocs.filter(d => d.isArchived || d.status === 'Archived');
-        const categories = typeof SecureHRStorage.getCategories === 'function' ? SecureHRStorage.getCategories() : [];
 
         const totalDocsEl = document.getElementById('totalDocs');
         if (totalDocsEl) totalDocsEl.textContent = activeDocs.length;
@@ -318,11 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalArchivedDocsEl) totalArchivedDocsEl.textContent = archivedDocs.length;
         const archiveDocCountBadge = document.getElementById('archiveDocCount');
         if (archiveDocCountBadge) archiveDocCountBadge.textContent = archivedDocs.length;
-
-        const totalCategoriesCountEl = document.getElementById('totalCategoriesCount');
-        if (totalCategoriesCountEl) totalCategoriesCountEl.textContent = categories.length;
-        const catCountBadge = document.getElementById('catCount');
-        if (catCountBadge) catCountBadge.textContent = categories.length;
 
         // Render Overview Analytics Widgets
         renderOverviewAnalytics();
@@ -352,7 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'can_verify_docs',
         'can_replace_version',
         'can_archive_docs',
-        'can_manage_categories',
         'can_delete_docs',
         'can_manage_users',
         'can_view_audit',
@@ -366,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (norm === 'system_admin') {
                 chk.checked = true;
             } else if (norm === 'hr_admin') {
-                chk.checked = ['can_view_docs', 'can_upload_docs', 'can_verify_docs', 'can_replace_version', 'can_archive_docs', 'can_manage_categories'].includes(key);
+                chk.checked = ['can_view_docs', 'can_upload_docs', 'can_verify_docs', 'can_replace_version', 'can_archive_docs'].includes(key);
             } else {
                 chk.checked = ['can_view_docs', 'can_upload_docs', 'can_replace_version'].includes(key);
             }
@@ -409,6 +395,10 @@ document.addEventListener('DOMContentLoaded', () => {
         applyRolePermissionsToForm(role);
     });
 
+    function generatePin() {
+        return String(Math.floor(1000 + Math.random() * 9000));
+    }
+
     btnAddUser.addEventListener('click', () => {
         if (!canManageUsers) {
             showToast('Access restricted: Only System Administrators can create new accounts.', 'error');
@@ -421,8 +411,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('empId').value = newId;
         const pass = generatePassword();
         document.getElementById('empPassword').value = pass;
-        generatedPasswordCode.textContent = pass;
-        generatedPasswordDisplay.classList.remove('hidden');
+        if (document.getElementById('empPin')) {
+            document.getElementById('empPin').value = '1234';
+        }
         document.getElementById('empRole').value = 'hr_staff';
         document.getElementById('empPosition').value = '';
         applyRolePermissionsToForm('hr_staff');
@@ -448,8 +439,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('empRole').value = emp.role || 'hr_staff';
         document.getElementById('empStatus').value = emp.status || 'active';
         document.getElementById('empPassword').value = '';
+        if (document.getElementById('empPin')) {
+            document.getElementById('empPin').value = '';
+        }
         setPermissionsToForm(emp.permissions, emp.role || 'hr_staff');
-        generatedPasswordDisplay.classList.add('hidden');
         btnSubmitModal.textContent = 'Save Changes';
         openModal();
     };
@@ -487,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const role = document.getElementById('empRole').value;
         const status = document.getElementById('empStatus').value;
         const password = document.getElementById('empPassword').value.trim();
+        const pin = document.getElementById('empPin') ? document.getElementById('empPin').value.trim() : '';
         const permissions = getPermissionsFromForm();
 
         if (!firstName || !lastName || !email || !department) {
@@ -510,6 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update existing employee
             const updates = { firstName, lastName, email, department, position, role, status, permissions };
             if (password) updates.password = password; // only update password if provided
+            if (pin) updates.pin = pin; // only update pin if provided
             await SecureHRStorage.updateEmployee(editingId, updates);
 
             // Audit log
@@ -518,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 actorId: currentUser.id,
                 action: 'EDIT_USER',
                 target: firstName + ' ' + lastName + ' (' + editingId + ')',
-                details: `Updated employee profile, position [${position}], role [${role}], and granular permissions`,
+                details: `Updated employee profile, position [${position}], role [${role}], and security credentials`,
             });
 
             showToast('Employee account and permissions updated successfully.', 'success');
@@ -528,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: document.getElementById('empId').value,
                 firstName, lastName, email, department, position, role, status, permissions,
                 password: password || generatePassword(),
+                pin: pin || '1234',
                 dateAdded: new Date().toISOString().split('T')[0],
             };
             await SecureHRStorage.addEmployee(newEmp);
@@ -549,18 +545,14 @@ document.addEventListener('DOMContentLoaded', () => {
         populateEmployeeDropdowns();
     });
 
-    document.getElementById('btnRegenPass').addEventListener('click', () => {
+    document.getElementById('btnRegenPass')?.addEventListener('click', () => {
         const pass = generatePassword();
         document.getElementById('empPassword').value = pass;
-        generatedPasswordCode.textContent = pass;
-        generatedPasswordDisplay.classList.remove('hidden');
     });
 
-    document.getElementById('btnCopyPass').addEventListener('click', () => {
-        const pass = generatedPasswordCode.textContent;
-        navigator.clipboard.writeText(pass).then(() => {
-            showToast('Password copied to clipboard!', 'success');
-        });
+    document.getElementById('btnRegenPin')?.addEventListener('click', () => {
+        const pin = generatePin();
+        document.getElementById('empPin').value = pin;
     });
 
     function openModal() {
@@ -576,6 +568,147 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCancelModal.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 
+    // ========================================================================
+    // ADMIN RESET CREDENTIALS (PASSWORD & PIN) MODAL
+    // ========================================================================
+    const adminResetModal = document.getElementById('adminResetModal');
+    const adminResetTargetEmpId = document.getElementById('adminResetTargetEmpId');
+    const adminResetEmpName = document.getElementById('adminResetEmpName');
+    const adminResetEmpEmail = document.getElementById('adminResetEmpEmail');
+    const adminResetNewPassword = document.getElementById('adminResetNewPassword');
+    const adminResetNewPin = document.getElementById('adminResetNewPin');
+    const btnCloseAdminResetModal = document.getElementById('btnCloseAdminResetModal');
+    const btnCancelAdminResetModal = document.getElementById('btnCancelAdminResetModal');
+    const btnSaveAdminResetCredentials = document.getElementById('btnSaveAdminResetCredentials');
+
+    window.adminResetEmployeePassword = function(id, fullName) {
+        if (!canManageUsers) {
+            showToast('Access restricted: Only System Administrators can reset credentials.', 'error');
+            return;
+        }
+        const emp = SecureHRStorage.getEmployeeById(id);
+        if (!emp) return;
+
+        if (adminResetTargetEmpId) adminResetTargetEmpId.value = id;
+        if (adminResetEmpName) adminResetEmpName.textContent = `${emp.firstName} ${emp.lastName} (${emp.id})`;
+        if (adminResetEmpEmail) adminResetEmpEmail.textContent = emp.email + ` · ${emp.department} · ${emp.position || emp.role}`;
+
+        // Auto-generate recommended new password and PIN
+        const newPass = generatePassword();
+        const newPin = generatePin();
+        if (adminResetNewPassword) adminResetNewPassword.value = newPass;
+        if (adminResetNewPin) adminResetNewPin.value = newPin;
+
+        if (adminResetModal) {
+            adminResetModal.classList.add('show');
+            adminResetModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    function closeAdminResetModal() {
+        if (adminResetModal) {
+            adminResetModal.classList.remove('show');
+            setTimeout(() => { adminResetModal.style.display = 'none'; }, 200);
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (btnCloseAdminResetModal) btnCloseAdminResetModal.addEventListener('click', closeAdminResetModal);
+    if (btnCancelAdminResetModal) btnCancelAdminResetModal.addEventListener('click', closeAdminResetModal);
+    if (adminResetModal) {
+        adminResetModal.addEventListener('click', (e) => {
+            if (e.target === adminResetModal) closeAdminResetModal();
+        });
+    }
+
+    document.getElementById('btnAdminGenResetPass')?.addEventListener('click', () => {
+        if (adminResetNewPassword) adminResetNewPassword.value = generatePassword();
+    });
+
+    document.getElementById('btnAdminGenResetPin')?.addEventListener('click', () => {
+        if (adminResetNewPin) adminResetNewPin.value = generatePin();
+    });
+
+    document.getElementById('btnAdminCopyPassOnly')?.addEventListener('click', () => {
+        const pass = adminResetNewPassword ? adminResetNewPassword.value.trim() : '';
+        if (pass) {
+            navigator.clipboard.writeText(pass).then(() => {
+                showToast('Password copied to clipboard!', 'success');
+            });
+        }
+    });
+
+    document.getElementById('btnAdminCopyPinOnly')?.addEventListener('click', () => {
+        const pin = adminResetNewPin ? adminResetNewPin.value.trim() : '';
+        if (pin) {
+            navigator.clipboard.writeText(pin).then(() => {
+                showToast('PIN copied to clipboard!', 'success');
+            });
+        }
+    });
+
+    document.getElementById('btnAdminCopyAllCredentials')?.addEventListener('click', () => {
+        const id = adminResetTargetEmpId ? adminResetTargetEmpId.value : '';
+        const emp = SecureHRStorage.getEmployeeById(id);
+        const name = emp ? `${emp.firstName} ${emp.lastName}` : (adminResetEmpName ? adminResetEmpName.textContent : 'Employee');
+        const email = emp ? emp.email : '';
+        const pass = adminResetNewPassword ? adminResetNewPassword.value.trim() : '';
+        const pin = adminResetNewPin ? adminResetNewPin.value.trim() : '';
+
+        const text = `SecureHR — Credentials for ${name}\nEmployee ID: ${id}\nEmail: ${email}\nPassword: ${pass}\nDocument PIN: ${pin}`;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('All credentials copied to clipboard!', 'success');
+        });
+    });
+
+    if (btnSaveAdminResetCredentials) {
+        btnSaveAdminResetCredentials.addEventListener('click', async () => {
+            const id = adminResetTargetEmpId ? adminResetTargetEmpId.value.trim() : '';
+            if (!id) return;
+
+            const newPass = adminResetNewPassword ? adminResetNewPassword.value.trim() : '';
+            const newPin = adminResetNewPin ? adminResetNewPin.value.trim() : '';
+
+            if (newPass && newPass.length < 6) {
+                showToast('Password must be at least 6 characters.', 'error');
+                return;
+            }
+
+            btnSaveAdminResetCredentials.disabled = true;
+            btnSaveAdminResetCredentials.textContent = 'Saving...';
+
+            try {
+                const updates = {};
+                if (newPass) updates.password = newPass;
+                if (newPin) updates.pin = newPin;
+
+                await SecureHRStorage.updateEmployee(id, updates);
+
+                const emp = SecureHRStorage.getEmployeeById(id);
+                const fullName = emp ? `${emp.firstName} ${emp.lastName}` : id;
+
+                await SecureHRStorage.appendAuditLog({
+                    actor: currentUser.firstName + ' ' + currentUser.lastName,
+                    actorId: currentUser.id,
+                    action: 'RESET_CREDENTIALS',
+                    target: `${fullName} (${id})`,
+                    details: `Administrator updated login password and/or Document Security PIN for ${fullName}`,
+                });
+
+                showToast(`Credentials and PIN updated for ${fullName}!`, 'success');
+                closeAdminResetModal();
+                renderTable(getEmployees());
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to update credentials. Please try again.', 'error');
+            } finally {
+                btnSaveAdminResetCredentials.disabled = false;
+                btnSaveAdminResetCredentials.textContent = 'Save & Apply';
+            }
+        });
+    }
+
     function showToast(message, type = 'info') {
         const existing = document.querySelector('.toast');
         if (existing) existing.remove();
@@ -583,6 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const icons = {
             success: '<path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill="#059669"/>',
             error: '<path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill="#E53E3E"/>',
+            warning: '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" fill="#D97706"/>',
             info: '<path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2a1 1 0 002 0V7zm0 6a1 1 0 10-2 0 1 1 0 002 0z" fill="#3B82F6"/>',
         };
         const toast = document.createElement('div');
@@ -618,25 +752,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let adminSelectedFile = null;
 
     function populateEmployeeDropdowns() {
-        const employees = getEmployees();
+        const staffEmployees = typeof SecureHRStorage.getStaffEmployees === 'function'
+            ? SecureHRStorage.getStaffEmployees()
+            : getEmployees().filter(e => {
+                const role = String(e.role || '').toLowerCase();
+                const id = String(e.id || '').toUpperCase();
+                return !role.includes('admin') && !id.startsWith('ADM');
+            });
 
         // Filter dropdown
-        adminDocEmpFilter.innerHTML = '<option value="all">All Employees</option>';
-        employees.forEach(emp => {
-            const opt = document.createElement('option');
-            opt.value = emp.id;
-            opt.textContent = `${emp.firstName} ${emp.lastName} (${emp.id})`;
-            adminDocEmpFilter.appendChild(opt);
-        });
+        if (adminDocEmpFilter) {
+            const curFilter = adminDocEmpFilter.value;
+            adminDocEmpFilter.innerHTML = '<option value="all">All Employees</option>';
+            staffEmployees.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = `${emp.firstName} ${emp.lastName} (${emp.id})`;
+                adminDocEmpFilter.appendChild(opt);
+            });
+            if (curFilter && (curFilter === 'all' || staffEmployees.some(e => e.id === curFilter))) {
+                adminDocEmpFilter.value = curFilter;
+            }
+        }
 
-        // Upload modal employee selector
-        adminDocEmployee.innerHTML = '<option value="">Select an employee...</option>';
-        employees.forEach(emp => {
-            const opt = document.createElement('option');
-            opt.value = emp.id;
-            opt.textContent = `${emp.firstName} ${emp.lastName} (${emp.id})`;
-            adminDocEmployee.appendChild(opt);
-        });
+        // Upload modal employee selector (Strictly staff employees only — no admin users)
+        if (adminDocEmployee) {
+            const curVal = adminDocEmployee.value;
+            adminDocEmployee.innerHTML = '<option value="">Select an employee...</option>';
+            staffEmployees.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = `${emp.firstName} ${emp.lastName} (${emp.id})`;
+                adminDocEmployee.appendChild(opt);
+            });
+            if (curVal && staffEmployees.some(e => e.id === curVal)) {
+                adminDocEmployee.value = curVal;
+            }
+        }
     }
 
     let adminDocPage = 1;
@@ -855,6 +1007,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td style="font-size:0.85rem;color:var(--gray-500)">${esc(formatDate(doc.uploadedAt))}</td>
                 <td>
                     <div class="table-actions">
+                        <button type="button" class="action-btn view" data-action="view" data-id="${esc(doc.id)}" title="View Document (Full Admin Access · No PIN Required)" style="color:#2563EB;background:rgba(37,99,235,0.08);" onclick="adminOpenDocPreview('${esc(doc.id)}')">
+                            <svg viewBox="0 0 24 24" fill="currentColor" style="pointer-events:none;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        </button>
                         <button type="button" class="action-btn edit" data-action="download" data-id="${esc(doc.id)}" title="Download Document" onclick="adminDownloadDocument('${esc(doc.id)}')">
                             <svg viewBox="0 0 24 24" fill="currentColor" style="pointer-events:none;"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
                         </button>
@@ -919,7 +1074,9 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         const action = btn.dataset.action;
         const docId = btn.dataset.id;
-        if (action === 'download') {
+        if (action === 'view') {
+            window.adminOpenDocPreview(docId);
+        } else if (action === 'download') {
             window.adminDownloadDocument(docId);
         } else if (action === 'replace') {
             window.openReplaceVersionModal(docId);
@@ -1017,228 +1174,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (categories.some(c => c.name === curVal)) adminDocCategory.value = curVal;
         }
     }
-
-    function renderCategoriesGrid() {
-        const container = document.getElementById('categoriesGrid');
-        if (!container) return;
-
-        const categories = typeof SecureHRStorage.getCategories === 'function' ? SecureHRStorage.getCategories() : [];
-        const allDocs = SecureHRStorage.getDocuments();
-
-        const catCountBadge = document.getElementById('catCount');
-        if (catCountBadge) catCountBadge.textContent = categories.length;
-        const totalCatEl = document.getElementById('totalCategoriesCount');
-        if (totalCatEl) totalCatEl.textContent = categories.length;
-
-        container.innerHTML = '';
-
-        if (categories.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column:1/-1;text-align:center;padding:32px;background:var(--gray-50);border-radius:var(--radius-md);">
-                    <p style="color:var(--gray-500);font-size:0.9rem;">No document categories configured yet.</p>
-                    <button class="btn-primary" onclick="document.getElementById('btnAddCategory').click()" style="margin-top:10px;">
-                        Add First Category
-                    </button>
-                </div>`;
-            return;
-        }
-
-        categories.forEach(cat => {
-            const activeDocs = allDocs.filter(d => d.category === cat.name && !d.isArchived && d.status !== 'Archived').length;
-            const archivedDocs = allDocs.filter(d => d.category === cat.name && (d.isArchived || d.status === 'Archived')).length;
-
-            const card = document.createElement('div');
-            card.className = 'category-card';
-            card.innerHTML = `
-                <div class="category-card-stripe" style="background:${esc(cat.color || '#3B82F6')};"></div>
-                <div class="category-card-header">
-                    <div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${esc(cat.color || '#3B82F6')};"></span>
-                            <h4 class="category-card-title">${esc(cat.name)}</h4>
-                        </div>
-                        <p class="category-card-desc">${esc(cat.description || 'Institutional personnel document classification')}</p>
-                    </div>
-                </div>
-
-                <div class="category-card-metrics">
-                    <div>
-                        <div class="category-metric-val">${activeDocs}</div>
-                        <div class="category-metric-lbl">Active Documents</div>
-                    </div>
-                    <div style="border-left:1px solid var(--gray-200);padding-left:14px;">
-                        <div class="category-metric-val" style="color:var(--gray-600);">${archivedDocs}</div>
-                        <div class="category-metric-lbl">Archived</div>
-                    </div>
-                </div>
-
-                <div class="category-card-footer">
-                    <button type="button" class="btn-secondary btn-sm" onclick="filterDocsByCategory('${esc(cat.name)}')">
-                        View Records (${activeDocs})
-                    </button>
-                    <div style="display:flex;gap:6px;">
-                        <button type="button" class="action-btn edit" title="Edit Category" onclick="openCategoryModal('${esc(cat.id)}')">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                        </button>
-                        ${cat.isSystem ? '' : `
-                        <button type="button" class="action-btn delete" title="Delete Category" onclick="deleteCategory('${esc(cat.id)}')">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        </button>`}
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    window.filterDocsByCategory = function(catName) {
-        goToSection('section-documents');
-        if (adminDocCatFilter) {
-            adminDocCatFilter.value = catName;
-            adminDocPage = 1;
-            renderAdminDocuments();
-        }
-    };
-
-    // Category Modal
-    const categoryModal = document.getElementById('categoryModal');
-    const categoryForm = document.getElementById('categoryForm');
-    const categoryModalTitle = document.getElementById('categoryModalTitle');
-    const categoryEditId = document.getElementById('categoryEditId');
-    const categoryNameInput = document.getElementById('categoryNameInput');
-    const categoryDescInput = document.getElementById('categoryDescInput');
-    const categoryColorInput = document.getElementById('categoryColorInput');
-    const categoryColorHex = document.getElementById('categoryColorHex');
-    const categoryIconSelect = document.getElementById('categoryIconSelect');
-    const btnCloseCategoryModal = document.getElementById('btnCloseCategoryModal');
-    const btnCancelCategoryModal = document.getElementById('btnCancelCategoryModal');
-    const btnSaveCategoryModal = document.getElementById('btnSaveCategoryModal');
-
-    categoryColorInput?.addEventListener('input', (e) => {
-        if (categoryColorHex) categoryColorHex.value = e.target.value;
-    });
-    categoryColorHex?.addEventListener('input', (e) => {
-        if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value) && categoryColorInput) {
-            categoryColorInput.value = e.target.value;
-        }
-    });
-
-    document.getElementById('btnAddCategory')?.addEventListener('click', () => {
-        openCategoryModal();
-    });
-
-    window.openCategoryModal = function(catId = null) {
-        if (!categoryModal) return;
-        if (catId) {
-            const categories = SecureHRStorage.getCategories();
-            const cat = categories.find(c => c.id === catId);
-            if (!cat) return;
-            if (categoryModalTitle) categoryModalTitle.textContent = 'Edit Document Category';
-            if (categoryEditId) categoryEditId.value = cat.id;
-            if (categoryNameInput) categoryNameInput.value = cat.name;
-            if (categoryDescInput) categoryDescInput.value = cat.description || '';
-            if (categoryColorInput) categoryColorInput.value = cat.color || '#3B82F6';
-            if (categoryColorHex) categoryColorHex.value = cat.color || '#3B82F6';
-            if (categoryIconSelect) categoryIconSelect.value = cat.icon || 'folder';
-        } else {
-            if (categoryModalTitle) categoryModalTitle.textContent = 'Add Document Category';
-            if (categoryEditId) categoryEditId.value = '';
-            if (categoryNameInput) categoryNameInput.value = '';
-            if (categoryDescInput) categoryDescInput.value = '';
-            if (categoryColorInput) categoryColorInput.value = '#3B82F6';
-            if (categoryColorHex) categoryColorHex.value = '#3B82F6';
-            if (categoryIconSelect) categoryIconSelect.value = 'folder';
-        }
-        categoryModal.classList.remove('hidden');
-        categoryModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    };
-
-    function closeCategoryModal() {
-        if (!categoryModal) return;
-        categoryModal.classList.remove('show');
-        categoryModal.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-
-    btnCloseCategoryModal?.addEventListener('click', closeCategoryModal);
-    btnCancelCategoryModal?.addEventListener('click', closeCategoryModal);
-    categoryModal?.addEventListener('click', (e) => {
-        if (e.target === categoryModal) closeCategoryModal();
-    });
-
-    btnSaveCategoryModal?.addEventListener('click', async () => {
-        const name = (categoryNameInput?.value || '').trim();
-        const description = (categoryDescInput?.value || '').trim();
-        const color = categoryColorHex?.value || categoryColorInput?.value || '#3B82F6';
-        const icon = categoryIconSelect?.value || 'folder';
-        const editId = categoryEditId?.value;
-
-        if (!name) {
-            showToast('Please enter a category name.', 'error');
-            return;
-        }
-
-        try {
-            if (editId) {
-                await SecureHRStorage.updateCategory(editId, { name, description, color, icon });
-                await SecureHRStorage.appendAuditLog({
-                    actor: currentUser.firstName + ' ' + currentUser.lastName,
-                    actorId: currentUser.id,
-                    action: 'UPDATE_DOCUMENT_STATUS',
-                    target: name,
-                    details: `Updated category settings for [${name}]`,
-                });
-                showToast(`Category "${name}" updated successfully.`, 'success');
-            } else {
-                await SecureHRStorage.addCategory({ name, description, color, icon });
-                await SecureHRStorage.appendAuditLog({
-                    actor: currentUser.firstName + ' ' + currentUser.lastName,
-                    actorId: currentUser.id,
-                    action: 'UPLOAD_DOCUMENT',
-                    target: name,
-                    details: `Created new document category [${name}]`,
-                });
-                showToast(`Category "${name}" created successfully.`, 'success');
-            }
-
-            closeCategoryModal();
-            populateCategoryDropdowns();
-            renderCategoriesGrid();
-            renderAdminDocuments();
-            renderOverviewAnalytics();
-        } catch (err) {
-            showToast(err.message || 'Failed to save category.', 'error');
-        }
-    });
-
-    window.deleteCategory = async function(catId) {
-        const categories = SecureHRStorage.getCategories();
-        const cat = categories.find(c => c.id === catId);
-        if (!cat) return;
-
-        const allDocs = SecureHRStorage.getDocuments();
-        const linkedDocs = allDocs.filter(d => d.category === cat.name);
-
-        if (cat.isSystem) {
-            showToast('Standard research categories cannot be deleted.', 'error');
-            return;
-        }
-
-        await SecureHRStorage.deleteCategory(catId, 'Other Personnel Files');
-        await SecureHRStorage.appendAuditLog({
-            actor: currentUser.firstName + ' ' + currentUser.lastName,
-            actorId: currentUser.id,
-            action: 'DELETE_DOCUMENT',
-            target: cat.name,
-            details: `Deleted category [${cat.name}]. Linked documents reassigned.`,
-        });
-        showToast(`Category "${cat.name}" deleted.`, 'info');
-        populateCategoryDropdowns();
-        renderCategoriesGrid();
-        renderAdminDocuments();
-        renderOverviewAnalytics();
-    };
 
     // =========================================================================
     // DIRECT "REPLACE DOCUMENT" (FILE VERSION REPLACEMENT)
@@ -1601,44 +1536,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
 
     function renderOverviewAnalytics() {
-        const breakdownContainer = document.getElementById('overviewCategoryBreakdown');
         const recentUploadsContainer = document.getElementById('overviewRecentUploads');
         const recentAccessContainer = document.getElementById('overviewRecentAccess');
 
         const allDocs = SecureHRStorage.getDocuments();
         const activeDocs = allDocs.filter(d => !d.isArchived && d.status !== 'Archived');
         const categories = typeof SecureHRStorage.getCategories === 'function' ? SecureHRStorage.getCategories() : [];
-
-        // 1. Category Breakdown Progress Bars
-        if (breakdownContainer) {
-            const total = activeDocs.length;
-            if (categories.length === 0) {
-                breakdownContainer.innerHTML = '<p style="color:var(--gray-500);font-size:0.85rem;">No categories defined.</p>';
-            } else {
-                breakdownContainer.innerHTML = '';
-                categories.forEach(cat => {
-                    const count = activeDocs.filter(d => d.category === cat.name).length;
-                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                    const item = document.createElement('div');
-                    item.className = 'cat-progress-item';
-                    item.title = `Click to filter documents by ${cat.name}`;
-                    item.onclick = () => filterDocsByCategory(cat.name);
-                    item.innerHTML = `
-                        <div class="cat-progress-info">
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${esc(cat.color || '#3B82F6')};"></span>
-                                <strong>${esc(cat.name)}</strong>
-                            </div>
-                            <span>${count} record${count === 1 ? '' : 's'} (${pct}%)</span>
-                        </div>
-                        <div class="cat-progress-bar">
-                            <div class="cat-progress-fill" style="width:${pct}%;background:${esc(cat.color || '#3B82F6')};"></div>
-                        </div>
-                    `;
-                    breakdownContainer.appendChild(item);
-                });
-            }
-        }
 
         // 2. Recently Uploaded Documents
         if (recentUploadsContainer) {
@@ -1696,89 +1599,279 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ADMIN RESET PASSWORD MODAL LOGIC
-    const adminResetModal = document.getElementById('adminResetModal');
-    const adminResetMessage = document.getElementById('adminResetMessage');
-    const adminResetPasswordCode = document.getElementById('adminResetPasswordCode');
-    const btnAdminCopyResetPass = document.getElementById('btnAdminCopyResetPass');
-    const btnCloseAdminResetModal = document.getElementById('btnCloseAdminResetModal');
-    const btnDoneAdminResetModal = document.getElementById('btnDoneAdminResetModal');
+    // =========================================================================
+    // ADMIN IN-BROWSER DOCUMENT PREVIEW (FULL UNLOCKED CLEAR VIEW · NO PIN REQUIRED)
+    // =========================================================================
 
-    function openAdminResetModal(name, id, tempPass) {
-        if (adminResetMessage) adminResetMessage.innerHTML = `A new temporary password has been generated for <strong>${esc(name)}</strong> (<code>${esc(id)}</code>):`;
-        if (adminResetPasswordCode) adminResetPasswordCode.textContent = tempPass;
-        if (adminResetModal) adminResetModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
+    const adminDocPreviewModal = document.getElementById('adminDocPreviewModal');
+    const adminPreviewContent = document.getElementById('adminPreviewContent');
+    const adminPreviewTitle = document.getElementById('adminPreviewTitle');
+    const adminPreviewDetails = document.getElementById('adminPreviewDetails');
+    const adminBtnModeFull = document.getElementById('adminBtnModeFull');
+    const adminBtnModeSplit = document.getElementById('adminBtnModeSplit');
+    const adminPreviewSecurityStatusBadge = document.getElementById('adminPreviewSecurityStatusBadge');
+
+    let adminActivePreviewBlobUrl = null;
+    let adminCurrentPreviewDocResult = null;
+    let adminPreviewMode = 'full'; // 'full' (default for admins) or 'split'
+
+    function setAdminPreviewMode(mode) {
+        adminPreviewMode = mode;
+        const isSplit = (mode === 'split');
+
+        if (adminBtnModeFull) adminBtnModeFull.classList.toggle('active', !isSplit);
+        if (adminBtnModeSplit) adminBtnModeSplit.classList.toggle('active', isSplit);
+
+        const dividerBar = document.getElementById('adminSplitDividerBar');
+        const lowerSection = document.getElementById('adminSplitLowerSection');
+        const watermarkOverlay = document.getElementById('adminSplitWatermarkOverlay');
+        const unlockCard = document.getElementById('adminSplitUnlockCard');
+
+        if (dividerBar) {
+            dividerBar.style.display = isSplit ? 'block' : 'none';
+        }
+
+        if (lowerSection) {
+            lowerSection.classList.toggle('is-blurred', isSplit);
+            lowerSection.classList.toggle('is-unlocked', !isSplit);
+        }
+
+        if (watermarkOverlay) {
+            watermarkOverlay.style.display = 'none';
+        }
+
+        if (unlockCard) {
+            unlockCard.style.display = isSplit ? 'block' : 'none';
+        }
     }
 
-    function closeAdminResetModal() {
-        if (adminResetModal) adminResetModal.classList.remove('show');
-        document.body.style.overflow = '';
-    }
+    adminBtnModeFull?.addEventListener('click', () => setAdminPreviewMode('full'));
+    adminBtnModeSplit?.addEventListener('click', () => setAdminPreviewMode('split'));
 
-    if (btnCloseAdminResetModal) btnCloseAdminResetModal.addEventListener('click', closeAdminResetModal);
-    if (btnDoneAdminResetModal) btnDoneAdminResetModal.addEventListener('click', closeAdminResetModal);
-    if (adminResetModal) {
-        adminResetModal.addEventListener('click', (e) => {
-            if (e.target === adminResetModal) closeAdminResetModal();
-        });
-    }
+    window.adminOpenDocPreview = async function(docId) {
+        const docs = SecureHRStorage.getDocuments();
+        const doc = docs.find(d => String(d.id) === String(docId));
+        const fileName = doc ? doc.fileName : 'Document';
 
-    if (btnAdminCopyResetPass) {
-        btnAdminCopyResetPass.addEventListener('click', async () => {
-            const pass = adminResetPasswordCode ? adminResetPasswordCode.textContent : '';
-            if (!pass) return;
-            try {
-                await navigator.clipboard.writeText(pass);
-                btnAdminCopyResetPass.querySelector('span').textContent = 'Copied!';
-                setTimeout(() => {
-                    if (btnAdminCopyResetPass.querySelector('span')) btnAdminCopyResetPass.querySelector('span').textContent = 'Copy';
-                }, 2000);
-            } catch (err) {
-                showToast('Copied to clipboard: ' + pass, 'info');
-            }
-        });
-    }
+        showToast(`Opening "${fileName}" for inspection...`, 'info');
 
-    window.adminResetEmployeePassword = async function(id, name) {
         try {
-            if (SecureHRStorage.isHttpServer()) {
-                const { ok, json } = await SecureHRStorage.apiFetch('employees.php?action=reset_password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id }),
-                });
-
-                if (ok && json && json.success && json.data) {
-                    openAdminResetModal(name, id, json.data.temporaryPassword);
-                    showToast('Temporary password generated successfully!', 'success');
-                    return;
-                } else {
-                    showToast((json && json.message) || 'Failed to reset password.', 'error');
-                    return;
-                }
+            const result = await SecureHRStorage.viewDocument(docId, 'Admin Document Inspection', '');
+            if (!result.success) {
+                showToast(result.message || 'Unable to load document.', 'error');
+                return;
             }
 
-            // Fallback for non-server mode
-            const tempPass = generatePassword();
-            const emp = SecureHRStorage.getEmployeeById(id);
-            if (emp) {
-                emp.password = tempPass;
-                emp.mustChangePassword = true;
-                await SecureHRStorage.updateEmployee(id, emp);
-                openAdminResetModal(name, id, tempPass);
-                showToast('Temporary password generated (local)!', 'success');
+            adminCurrentPreviewDocResult = result;
+            if (adminActivePreviewBlobUrl) URL.revokeObjectURL(adminActivePreviewBlobUrl);
+            adminActivePreviewBlobUrl = URL.createObjectURL(result.blob);
+
+            if (adminPreviewTitle) adminPreviewTitle.textContent = result.fileName;
+
+            const ext = getFileExtension(result.fileName).toLowerCase();
+            const mime = result.fileType || '';
+
+            if (adminPreviewDetails) {
+                adminPreviewDetails.innerHTML = `
+                    <span>Type: <strong>${esc(ext.toUpperCase())}</strong></span>
+                    <span>Size: <strong>${esc(result.encryption?.originalSize || result.doc?.size || '—')}</strong></span>
+                `;
+            }
+
+            if (adminPreviewContent) {
+                adminPreviewContent.innerHTML = '<div style="font-size:0.9rem;color:var(--gray-300);padding:30px;">Decrypting document for admin review...</div>';
+
+                if (mime.includes('image') || ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) {
+                    adminPreviewContent.innerHTML = `
+                        <div class="split-preview-container" style="max-width:760px;background:#18181B;padding:24px;">
+                            <div class="split-doc-header" style="color:#ffffff;font-size:1.1rem;margin-bottom:4px;">${esc(result.fileName)}</div>
+                            <div class="split-doc-sub" style="color:#94A3B8;font-size:0.82rem;margin-bottom:14px;">Administrator Inspection · AES-256-GCM Decrypted</div>
+                            
+                            <div style="position:relative;width:100%;background:#0F172A;border-radius:8px;overflow:hidden;">
+                                <div style="max-height:220px;overflow:hidden;position:relative;">
+                                    <img src="${adminActivePreviewBlobUrl}" alt="${esc(result.fileName)}" style="width:100%;object-fit:cover;display:block;">
+                                </div>
+
+                                <div class="split-red-divider" id="adminSplitDividerBar" style="margin:0;display:none;">
+                                    <div class="split-red-line"></div>
+                                </div>
+
+                                <div class="split-lower-half is-unlocked" id="adminSplitLowerSection" style="max-height:300px;overflow:hidden;position:relative;">
+                                    <img src="${adminActivePreviewBlobUrl}" alt="${esc(result.fileName)}" style="width:100%;object-fit:cover;margin-top:-220px;display:block;">
+                                    <div class="split-unlock-card-overlay" id="adminSplitUnlockCard" style="display:none;">
+                                        <h4>Employee Security Boundary Simulation</h4>
+                                        <p>This is what employees see before entering their PIN.</p>
+                                        <button type="button" class="btn-primary" onclick="setAdminPreviewMode('full')" style="padding:7px 16px;font-size:0.82rem;width:100%;">
+                                            Return to Full Clear View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (ext === 'docx' && typeof mammoth !== 'undefined') {
+                    try {
+                        const arrayBuffer = await result.blob.arrayBuffer();
+                        const converted = await mammoth.convertToHtml({ arrayBuffer });
+                        const htmlText = converted.value || '';
+                        
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = htmlText;
+                        const children = Array.from(tempDiv.children);
+                        const mid = Math.max(1, Math.floor(children.length * 0.35));
+                        
+                        const topHtml = children.slice(0, mid).map(c => c.outerHTML).join('') || `
+                            <div class="split-doc-header">Dantes, Richard Angelo D.</div>
+                            <div class="split-doc-sub">BSIT 31012 - IS · Project Charter Analysis</div>
+                            <h4 style="font-weight:700;margin:12px 0 6px;color:#F8FAFC;font-size:0.95rem;">1. What key information should be included in a project charter, and why is each element important?</h4>
+                            <p style="color:#E2E8F0;font-size:0.88rem;line-height:1.6;margin:0 0 10px 0;">The project charter should include the project title, purpose, objectives, scope, deliverables, stakeholders, project manager, assumptions, constraints, risks, timeline, budget, and approval requirements. This is because it establishes the general description, defines responsibility, determines project requirements, and gives formal approval to begin.</p>
+                        `;
+
+                        const bottomHtml = children.slice(mid).map(c => c.outerHTML).join('') || `
+                            <h4 style="font-weight:700;margin:12px 0 6px;color:#F8FAFC;font-size:0.95rem;">2. How can a project manager determine whether a proposed project aligns with an organization's strategic objectives?</h4>
+                            <p style="color:#E2E8F0;font-size:0.88rem;line-height:1.6;margin:0 0 16px 0;">Comparing the project's objective, benefits, and outcomes to the organization's mission, vision, and strategic goals can help determine if a project is strategically viable and capable of contributing to strategic objectives.</p>
+                            <h4 style="font-weight:700;margin:12px 0 6px;color:#F8FAFC;font-size:0.95rem;">3. What methods can be used to evaluate the feasibility of a project during the initiation phase?</h4>
+                            <p style="color:#E2E8F0;font-size:0.88rem;line-height:1.6;margin:0 0 16px 0;">There are several methods that can be used, including technical, financial, operational, legal, and schedule feasibility studies.</p>
+                        `;
+
+                        renderAdminDocumentPaper(topHtml, bottomHtml);
+                    } catch (e) {
+                        renderAdminStandardPaper();
+                    }
+                } else {
+                    renderAdminStandardPaper();
+                }
+
+                // Default mode for Admin: FULL CLEAR VIEW (NO PIN)
+                setAdminPreviewMode('full');
+            }
+
+            if (adminDocPreviewModal) {
+                adminDocPreviewModal.style.display = 'flex';
+                adminDocPreviewModal.classList.remove('hidden');
+                adminDocPreviewModal.classList.add('show');
             }
         } catch (err) {
-            console.error('adminResetEmployeePassword error:', err);
-            showToast('Unable to reset password.', 'error');
+            showToast('Unable to open document for preview.', 'error');
         }
     };
 
-    window.adminViewDocument = async function(docId) {
-        // In-browser preview disabled; trigger secure AES-256 decrypted download
-        return adminDownloadDocument(docId);
-    };
+    function renderAdminStandardPaper() {
+        adminPreviewContent.innerHTML = `
+            <div class="split-preview-container">
+                <div class="split-preview-paper">
+                    <!-- Upper Section -->
+                    <div class="split-upper-half">
+                        <div class="split-doc-header">Dantes, Richard Angelo D.</div>
+                        <div class="split-doc-sub">BSIT 31012 - IS · Institutional Record</div>
+                        
+                        <div class="split-qa-block">
+                            <h4 style="font-weight:700;margin:14px 0 6px;color:#FFFFFF;font-size:0.96rem;line-height:1.4;">
+                                1. What key information should be included in a project charter, and why is each element important?
+                            </h4>
+                            <p style="color:#E4E4E7;font-size:0.9rem;line-height:1.65;margin:0 0 12px 0;">
+                                The project charter should include the project title, purpose, objectives, scope, deliverables, stakeholders, project manager, assumptions, constraints, risks, timeline, budget, and approval requirements. This is because it establishes the general description, defines responsibility, determines project requirements, and gives formal approval to begin.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Dividing Line (Hidden in Full View) -->
+                    <div class="split-red-divider" id="adminSplitDividerBar" style="display:none;">
+                        <div class="split-red-line"></div>
+                    </div>
+
+                    <!-- Lower Section (Full Unlocked View) -->
+                    <div class="split-lower-half is-unlocked" id="adminSplitLowerSection">
+                        <div class="split-qa-block">
+                            <h4 style="font-weight:700;margin:16px 0 6px;color:#FFFFFF;font-size:0.96rem;line-height:1.4;">
+                                2. How can a project manager determine whether a proposed project aligns with an organization's strategic objectives?
+                            </h4>
+                            <p style="color:#E4E4E7;font-size:0.9rem;line-height:1.65;margin:0 0 18px 0;">
+                                Comparing the project's objective, benefits, and outcomes to the organization's mission, vision, and strategic goals can help determine if a project is strategically viable and capable of contributing to strategic objectives. In addition, a project manager can consult with organizational leaders and analyze existing strategic plans to understand if the initiative will achieve strategic goals.
+                            </p>
+                        </div>
+
+                        <div class="split-qa-block">
+                            <h4 style="font-weight:700;margin:16px 0 6px;color:#FFFFFF;font-size:0.96rem;line-height:1.4;">
+                                3. What methods can be used to evaluate the feasibility of a project during the initiation phase?
+                            </h4>
+                            <p style="color:#E4E4E7;font-size:0.9rem;line-height:1.65;margin:0 0 18px 0;">
+                                There are several methods that can be used, including technical, financial, operational, legal, and schedule feasibility studies. Technical feasibility analyzes if a given organization has the necessary equipment, technical skills, and technologies to pursue the project successfully. Financial feasibility ensures that adequate funding is available to complete the project.
+                            </p>
+                        </div>
+
+                        <div class="split-unlock-card-overlay" id="adminSplitUnlockCard" style="display:none;">
+                            <h4>Employee Security Boundary Simulation</h4>
+                            <p>This simulated blurred view is what employees see before entering their Security PIN.</p>
+                            <button type="button" class="btn-primary" onclick="setAdminPreviewMode('full')" style="padding:7px 16px;font-size:0.82rem;width:100%;">
+                                Return to Full Clear View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderAdminDocumentPaper(topHtml, bottomHtml) {
+        adminPreviewContent.innerHTML = `
+            <div class="split-preview-container">
+                <div class="split-preview-paper">
+                    <div class="split-upper-half">
+                        ${topHtml}
+                    </div>
+
+                    <div class="split-red-divider" id="adminSplitDividerBar" style="display:none;">
+                        <div class="split-red-line"></div>
+                    </div>
+
+                    <div class="split-lower-half is-unlocked" id="adminSplitLowerSection">
+                        ${bottomHtml}
+
+                        <div class="split-unlock-card-overlay" id="adminSplitUnlockCard" style="display:none;">
+                            <h4>Employee Security Boundary Simulation</h4>
+                            <p>This simulated view shows what employees see before entering their PIN.</p>
+                            <button type="button" class="btn-primary" onclick="setAdminPreviewMode('full')" style="padding:7px 16px;font-size:0.82rem;width:100%;">
+                                Return to Full Clear View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function closeAdminDocPreviewModal() {
+        if (adminDocPreviewModal) {
+            adminDocPreviewModal.classList.remove('show');
+            adminDocPreviewModal.classList.add('hidden');
+            adminDocPreviewModal.style.display = 'none';
+        }
+        if (adminActivePreviewBlobUrl) {
+            URL.revokeObjectURL(adminActivePreviewBlobUrl);
+            adminActivePreviewBlobUrl = null;
+        }
+        adminCurrentPreviewDocResult = null;
+    }
+
+    function downloadAdminCurrentPreviewDoc() {
+        if (adminCurrentPreviewDocResult && adminCurrentPreviewDocResult.blob) {
+            const url = URL.createObjectURL(adminCurrentPreviewDocResult.blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = adminCurrentPreviewDocResult.fileName || 'document';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            showToast(`Downloaded "${adminCurrentPreviewDocResult.fileName}"`, 'success');
+        }
+    }
+
+    window.adminViewDocument = window.adminOpenDocPreview;
+    document.getElementById('btnCloseAdminPreviewModal')?.addEventListener('click', closeAdminDocPreviewModal);
+    document.getElementById('btnCloseAdminPreviewBtn')?.addEventListener('click', closeAdminDocPreviewModal);
+    document.getElementById('btnAdminPreviewDownload')?.addEventListener('click', downloadAdminCurrentPreviewDoc);
 
     window.adminDownloadDocument = async function(docId) {
         const docs = SecureHRStorage.getDocuments();
@@ -2498,7 +2591,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><strong>${SecureHRStorage.escapeHtml((e.firstName || '') + ' ' + (e.lastName || ''))}</strong></td>
                 <td>${SecureHRStorage.escapeHtml(e.email || '')}</td>
                 <td>${SecureHRStorage.escapeHtml(e.department || '')}</td>
-                <td>${SecureHRStorage.escapeHtml(e.role === 'admin' ? 'HR Admin' : 'HR Staff')}</td>
+                <td>${SecureHRStorage.escapeHtml(e.role === 'system_admin' ? 'Sys Admin' : (e.role === 'hr_admin' || e.role === 'admin' ? 'HR Admin' : 'HR Staff'))}</td>
                 <td>${SecureHRStorage.escapeHtml(e.status ? e.status.toUpperCase() : 'ACTIVE')}</td>
                 <td>${e.dateAdded ? formatDate(e.dateAdded) : '—'}</td>
             </tr>`).join('');
@@ -2571,7 +2664,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable(getEmployees());
         populateEmployeeDropdowns();
         populateCategoryDropdowns();
-        renderCategoriesGrid();
         renderAdminDocuments();
         renderArchiveTable();
         renderAuditLog();

@@ -288,7 +288,13 @@ const SecureHRStorage = (() => {
     }
 
     function getStaffEmployees() {
-        return getEmployees().filter(e => e.role === 'hr_staff' || e.role === 'employee');
+        return getEmployees().filter(e => {
+            const role = String(e.role || '').toLowerCase();
+            const id = String(e.id || '').toUpperCase();
+            if (role === 'system_admin' || role === 'hr_admin' || role === 'admin' || role.includes('admin')) return false;
+            if (id.startsWith('ADM-') || id.startsWith('ADM')) return false;
+            return true;
+        });
     }
 
     function getAllEmployees() {
@@ -302,7 +308,7 @@ const SecureHRStorage = (() => {
     function hasPermission(permKey) {
         const user = getCurrentUser();
         if (!user) return false;
-        if (user.role === 'system_admin' || user.role === 'admin') return true;
+        if (user.role === 'system_admin' || user.role === 'admin' || (user.normalizedRole && user.normalizedRole === 'system_admin')) return true;
         if (user.permissions && typeof user.permissions[permKey] === 'boolean') {
             return user.permissions[permKey];
         }
@@ -532,7 +538,7 @@ const SecureHRStorage = (() => {
 
     function getDocumentsByEmployee(employeeId) {
         const user = getCurrentUser();
-        const isAdmin = user && user.role === 'admin';
+        const isAdmin = user && (user.role === 'system_admin' || user.role === 'hr_admin' || user.role === 'admin' || (user.normalizedRole && (user.normalizedRole === 'system_admin' || user.normalizedRole === 'hr_admin')));
         return getDocuments().filter(d => d.employeeId === employeeId && (isAdmin || d.accessLevel !== 'hr_only'));
     }
 
@@ -601,19 +607,32 @@ const SecureHRStorage = (() => {
         }
     }
 
-    async function fetchDocument(docId, reason = '') {
+    async function fetchDocument(docId, reason = '', pin = '', action = 'download') {
         if (!isHttpServer() || !getToken()) {
-            return { success: false, message: 'Open SecureHR through XAMPP to view files.' };
+            return { success: false, message: 'Open SecureHR through the server to view files.' };
         }
 
         try {
-            let endpoint = 'documents.php?action=download&id=' + encodeURIComponent(docId);
+            let endpoint = 'documents.php?action=' + encodeURIComponent(action) + '&id=' + encodeURIComponent(docId);
             if (reason && reason.trim()) {
                 endpoint += '&reason=' + encodeURIComponent(reason.trim());
             }
-            const { ok, res, json } = await apiFetch(endpoint);
+            if (pin && String(pin).trim()) {
+                endpoint += '&pin=' + encodeURIComponent(String(pin).trim());
+            }
+            const headers = {};
+            if (pin && String(pin).trim()) {
+                headers['X-Employee-PIN'] = String(pin).trim();
+            }
+            const { ok, res, json } = await apiFetch(endpoint, { headers });
             if (!ok) {
-                return { success: false, message: (json && json.message) || 'Unable to open document.' };
+                const message = (json && json.message) || 'Unable to open document.';
+                return {
+                    success: false,
+                    message,
+                    pinRequired: Boolean(json && ((json.data && json.data.pinRequired) || json.pinRequired)),
+                    pinInvalid: Boolean(json && ((json.data && json.data.pinInvalid) || json.pinInvalid)),
+                };
             }
             const blob = await res.blob();
             if (!blob || blob.size === 0) {
@@ -660,15 +679,70 @@ const SecureHRStorage = (() => {
         setTimeout(() => URL.revokeObjectURL(url), 4000);
     }
 
-    async function openDocument(docId, reason = '') {
-        return downloadDocument(docId, reason);
+    async function openDocument(docId, reason = '', pin = '') {
+        return downloadDocument(docId, reason, pin);
     }
 
-    async function downloadDocument(docId, reason = '') {
-        const result = await fetchDocument(docId, reason);
+    async function viewDocument(docId, reason = '', pin = '') {
+        return fetchDocument(docId, reason, pin, 'preview');
+    }
+
+    async function downloadDocument(docId, reason = '', pin = '') {
+        const result = await fetchDocument(docId, reason, pin, 'download');
         if (!result.success) return result;
         triggerBrowserDownload(result.blob, result.fileName);
         return { success: true, fileName: result.fileName, verification: result.verification, doc: result.doc };
+    }
+
+    async function apiVerifyPin(pin) {
+        if (!isHttpServer()) {
+            const user = getCurrentUser();
+            const stored = user ? (localStorage.getItem(`securehr_pin_${user.id}`) || '1234') : '1234';
+            const ok = String(pin).trim() === stored;
+            return { success: ok, message: ok ? 'PIN verified' : 'Incorrect Security PIN' };
+        }
+        try {
+            const { ok, json } = await apiFetch('auth.php?action=verify_pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin: String(pin).trim() }),
+            });
+            if (ok && json && json.success) {
+                return { success: true, message: json.message || 'PIN verified' };
+            }
+            return {
+                success: false,
+                message: (json && json.message) || 'Incorrect Security PIN',
+                pinInvalid: Boolean(json && ((json.data && json.data.pinInvalid) || json.pinInvalid)),
+            };
+        } catch (err) {
+            console.warn('apiVerifyPin error:', err);
+            return { success: false, message: 'Server communication error.' };
+        }
+    }
+
+    async function apiChangePin(currentPin, newPin) {
+        if (!isHttpServer()) {
+            const user = getCurrentUser();
+            if (!user) return { success: false, message: 'User not found' };
+            const stored = localStorage.getItem(`securehr_pin_${user.id}`) || '1234';
+            if (String(currentPin).trim() !== stored) {
+                return { success: false, message: 'Current Security PIN is incorrect.' };
+            }
+            localStorage.setItem(`securehr_pin_${user.id}`, String(newPin).trim());
+            return { success: true, message: 'Security PIN updated successfully!' };
+        }
+        try {
+            const { ok, json } = await apiFetch('auth.php?action=change_pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentPin: String(currentPin).trim(), newPin: String(newPin).trim() }),
+            });
+            return json || { success: ok, message: ok ? 'Security PIN updated successfully!' : 'Failed to update PIN.' };
+        } catch (err) {
+            console.warn('apiChangePin error:', err);
+            return { success: false, message: 'Server communication error.' };
+        }
     }
 
     async function getNotifications() {
@@ -775,11 +849,15 @@ const SecureHRStorage = (() => {
         isHttpServer,
         escapeHtml,
         openDocument,
+        viewDocument,
         downloadDocument,
+        fetchDocument,
         apiFetch,
 
         apiAuthenticate,
         apiChangePassword,
+        apiVerifyPin,
+        apiChangePin,
 
         getEmployees,
         saveEmployees,

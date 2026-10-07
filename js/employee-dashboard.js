@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         admin: 'HR Administrator',
         employee: 'Employee',
     };
-    const roleTitle = roleTitles[currentUser.role] || (currentUser.role === 'admin' ? 'HR Administrator' : 'HR Staff');
+    const roleTitle = roleTitles[currentUser.role] || (currentUser.normalizedRole === 'system_admin' || currentUser.role === 'admin' ? 'HR Administrator' : 'HR Staff');
     const sidebarRoleTag = document.getElementById('sidebarRoleTag');
     if (sidebarRoleTag) sidebarRoleTag.textContent = roleTitle;
 
@@ -216,10 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     valA = (a.status || 'Verified').toLowerCase();
                     valB = (b.status || 'Verified').toLowerCase();
                     break;
-                case 'policy':
-                    valA = (a.accessLevel || 'shared').toLowerCase();
-                    valB = (b.accessLevel || 'shared').toLowerCase();
-                    break;
                 case 'size':
                     valA = a.rawBytes || 0;
                     valB = b.rawBytes || 0;
@@ -269,31 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const ext = getFileExtension(doc.fileName);
             const badgeClass = getBadgeClass(ext);
 
-            // Deletion Lock Rules:
-            // 1. Documents uploaded/issued by HR Admin are locked
-            // 2. Documents verified or archived by HR are locked
-            const isOfficialAdminUpload = Boolean(doc.uploadedBy && doc.uploadedBy !== currentUser.id);
-            const isVerified = (doc.status === 'Verified');
-            const isArchived = (doc.status === 'Archived');
-            const isLocked = isOfficialAdminUpload || isVerified || isArchived;
-
-            let lockReason = '';
-            if (isVerified) {
-                lockReason = 'Verified by HR Administration: Official record is locked from deletion for data integrity.';
-            } else if (isArchived) {
-                lockReason = 'Archived record: Historical compliance record locked from deletion.';
-            } else if (isOfficialAdminUpload) {
-                lockReason = 'Official HR Document: Issued directly by HR Administration and locked from employee deletion.';
-            }
-
-            let policyBadgeHtml = '';
-            if (isLocked) {
-                const label = isVerified ? 'Locked (Verified)' : (isArchived ? 'Locked (Archived)' : 'Locked (Official HR)');
-                policyBadgeHtml = `<span class="lock-badge locked" title="${esc(lockReason)}"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg> ${label}</span>`;
-            } else {
-                policyBadgeHtml = `<span class="lock-badge unlocked" title="Pending verification: You can edit or delete this file."><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/></svg> Editable</span>`;
-            }
-
             const status = doc.status || 'Verified';
             let statusBadgeHtml = '';
             if (status === 'Verified') {
@@ -330,29 +301,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td><span class="category-badge ${esc(doc.category)}">${esc(doc.category)}</span></td>
                 <td>${statusBadgeHtml}</td>
-                <td>${policyBadgeHtml}</td>
                 <td style="font-size:0.85rem;color:var(--gray-500)">${esc(doc.size || '—')}</td>
                 <td style="font-size:0.85rem;color:var(--gray-500)">${esc(formatDate(doc.uploadedAt))}</td>
                 <td>
                     <div class="table-actions">
-                        <button class="action-btn" title="View Document Details" onclick="openEmpDocDetailModal('${esc(doc.id)}')">
+                        <button class="action-btn" title="View Document" onclick="empRequestAccess('${esc(doc.id)}', 'view')">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                        </button>
-                        <button class="action-btn edit" title="Download Document" onclick="downloadDocument('${esc(doc.id)}')">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
                         </button>
                         <button class="action-btn" title="Replace File / New Version" onclick="openEmpReplaceModal('${esc(doc.id)}')">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4 7.58 4 4 7.58 4 12H1l4 4 4-4H6z"/></svg>
                         </button>
-                        ${isLocked ? `
-                        <button class="action-btn locked" title="Document locked from deletion: ${esc(lockReason)}" onclick="showLockedDocumentNotice('${esc(doc.id)}')">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-                        </button>
-                        ` : `
-                        <button class="action-btn delete" title="Delete Document" onclick="deleteDocument('${esc(doc.id)}')">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        </button>
-                        `}
                     </div>
                 </td>
             `;
@@ -383,8 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cat) cat.textContent = doc.category;
         const st = document.getElementById('empDetailStatus');
         if (st) st.textContent = doc.status || 'Verified';
-        const pol = document.getElementById('empDetailPolicy');
-        if (pol) pol.textContent = (doc.status === 'Verified' || doc.status === 'Archived' || (doc.uploadedBy && doc.uploadedBy !== currentUser.id)) ? 'Locked (Compliance Protected)' : 'Editable / Replaceable';
         const dt = document.getElementById('empDetailDateUploaded');
         if (dt) dt.textContent = formatDate(doc.uploadedAt);
 
@@ -415,10 +371,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btnCloseEmpDocDetailModal')?.addEventListener('click', closeEmpDocDetailModal);
     document.getElementById('btnCloseEmpDocDetailBtn')?.addEventListener('click', closeEmpDocDetailModal);
-    document.getElementById('btnEmpDownloadFromDetail')?.addEventListener('click', () => {
+    document.getElementById('btnEmpViewFromDetail')?.addEventListener('click', () => {
         if (currentEmpDetailDocId) {
+            const id = currentEmpDetailDocId;
             closeEmpDocDetailModal();
-            downloadDocument(currentEmpDetailDocId);
+            empRequestAccess(id, 'view');
         }
     });
 
@@ -534,17 +491,522 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderDocuments = renderDocuments;
     window.openEmpDocDetailModal = openEmpDocDetailModal;
 
-    window.viewDocument = async function(docId) {
-        // In-browser preview disabled; trigger secure download
-        return downloadDocument(docId);
-    };
+    // =========================================================================
+    // SECURITY PIN VERIFICATION & DOCUMENT PREVIEW ENGINE
+    // =========================================================================
 
-    window.downloadDocument = async function(docId) {
-        const result = await SecureHRStorage.downloadDocument(docId);
-        if (!result.success) {
-            showToast(result.message || 'Unable to download this file.', 'error');
+    let pendingPinDocId = null;
+    let pendingPinAction = 'download'; // 'view' or 'download'
+    let activePreviewBlobUrl = null;
+    let currentPreviewDocResult = null;
+
+    const empPinModal = document.getElementById('empPinModal');
+    const pinDigitBoxes = document.querySelectorAll('#pinDigitBoxes .pin-digit-input');
+    const empPinErrorAlert = document.getElementById('empPinErrorAlert');
+    const empPinErrorMessage = document.getElementById('empPinErrorMessage');
+    const btnSubmitEmpPin = document.getElementById('btnSubmitEmpPin');
+    const btnSubmitEmpPinText = document.getElementById('btnSubmitEmpPinText');
+    const btnTogglePinVisibility = document.getElementById('btnTogglePinVisibility');
+
+    function openEmpPinModal(docId, action = 'download') {
+        const doc = getMyDocuments().find(d => String(d.id) === String(docId));
+        if (!doc) return;
+
+        pendingPinDocId = docId;
+        pendingPinAction = action;
+
+        const ext = getFileExtension(doc.fileName).toUpperCase();
+        document.getElementById('empPinTargetDocId').value = docId;
+        document.getElementById('empPinTargetAction').value = action;
+        document.getElementById('empPinDocName').textContent = doc.fileName;
+        document.getElementById('empPinDocMeta').textContent = `${doc.category} · ${doc.size || '—'} · AES-256-GCM Encrypted`;
+        document.getElementById('empPinDocBadge').textContent = ext || 'FILE';
+
+        document.getElementById('empPinModalTitle').textContent = action === 'view' ? 'Security PIN Required to View' : 'Security PIN Required to Download';
+        if (btnSubmitEmpPinText) {
+            btnSubmitEmpPinText.textContent = action === 'view' ? 'Authorize & View Document' : 'Authorize & Decrypt Download';
+        }
+
+        // Reset pin inputs
+        pinDigitBoxes.forEach(box => {
+            box.value = '';
+            box.classList.remove('filled', 'error');
+            box.type = 'password';
+        });
+
+        if (btnTogglePinVisibility) {
+            btnTogglePinVisibility.querySelector('.eye-open').style.display = 'block';
+            btnTogglePinVisibility.querySelector('.eye-closed').style.display = 'none';
+        }
+
+        if (empPinErrorAlert) empPinErrorAlert.classList.add('hidden');
+
+        if (empPinModal) {
+            empPinModal.style.display = 'flex';
+            empPinModal.classList.remove('hidden');
+            empPinModal.classList.add('show');
+        }
+
+        setTimeout(() => {
+            const firstBox = document.querySelector('#pinDigitBoxes .pin-digit-input[data-index="0"]');
+            if (firstBox) firstBox.focus();
+        }, 80);
+    }
+
+    function closeEmpPinModal() {
+        if (empPinModal) {
+            empPinModal.classList.remove('show');
+            empPinModal.classList.add('hidden');
+            empPinModal.style.display = 'none';
+        }
+        pendingPinDocId = null;
+    }
+
+    // PIN Boxes behavior: auto-advance, backspace, paste
+    pinDigitBoxes.forEach((input, idx) => {
+        input.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/\D/g, '');
+            e.target.value = val ? val[0] : '';
+            if (e.target.value) {
+                e.target.classList.add('filled');
+                e.target.classList.remove('error');
+                if (idx < pinDigitBoxes.length - 1) {
+                    pinDigitBoxes[idx + 1].focus();
+                }
+            } else {
+                e.target.classList.remove('filled');
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+                pinDigitBoxes[idx - 1].focus();
+                pinDigitBoxes[idx - 1].value = '';
+                pinDigitBoxes[idx - 1].classList.remove('filled');
+            } else if (e.key === 'ArrowLeft' && idx > 0) {
+                pinDigitBoxes[idx - 1].focus();
+            } else if (e.key === 'ArrowRight' && idx < pinDigitBoxes.length - 1) {
+                pinDigitBoxes[idx + 1].focus();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                submitEmpPin();
+            }
+        });
+
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+            if (!text) return;
+            pinDigitBoxes.forEach((box, bIdx) => {
+                if (text[bIdx]) {
+                    box.value = text[bIdx];
+                    box.classList.add('filled');
+                    box.classList.remove('error');
+                }
+            });
+            const lastFilledIdx = Math.min(text.length - 1, pinDigitBoxes.length - 1);
+            if (lastFilledIdx >= 0) pinDigitBoxes[lastFilledIdx].focus();
+        });
+    });
+
+    btnTogglePinVisibility?.addEventListener('click', () => {
+        const first = pinDigitBoxes[0];
+        const isPassword = first && first.type === 'password';
+        const newType = isPassword ? 'text' : 'password';
+        pinDigitBoxes.forEach(b => b.type = newType);
+
+        const eyeOpen = btnTogglePinVisibility.querySelector('.eye-open');
+        const eyeClosed = btnTogglePinVisibility.querySelector('.eye-closed');
+        if (eyeOpen && eyeClosed) {
+            eyeOpen.style.display = isPassword ? 'none' : 'block';
+            eyeClosed.style.display = isPassword ? 'block' : 'none';
+        }
+    });
+
+    async function submitEmpPin() {
+        const pin = Array.from(pinDigitBoxes).map(b => b.value).join('');
+        if (pin.length < 4) {
+            if (empPinErrorMessage) empPinErrorMessage.textContent = 'Please enter your 4-digit Security PIN.';
+            if (empPinErrorAlert) empPinErrorAlert.classList.remove('hidden');
+            pinDigitBoxes.forEach(b => { if (!b.value) b.classList.add('error'); });
+            return;
+        }
+
+        if (!pendingPinDocId) return;
+
+        btnSubmitEmpPin.disabled = true;
+        const originalText = btnSubmitEmpPinText.textContent;
+        btnSubmitEmpPinText.textContent = 'Verifying & Decrypting...';
+
+        try {
+            if (pendingPinAction === 'view') {
+                const res = await SecureHRStorage.viewDocument(pendingPinDocId, 'Employee Document In-Browser View', pin);
+                if (res.success) {
+                    closeEmpPinModal();
+                    isCurrentDocPinUnlocked = true;
+                    currentPreviewDocResult = res;
+                    if (activePreviewBlobUrl) URL.revokeObjectURL(activePreviewBlobUrl);
+                    activePreviewBlobUrl = URL.createObjectURL(res.blob);
+                    
+                    // Unblur the split preview if it is open
+                    updatePreviewUnlockedUI();
+                    showToast('PIN verified! Full document unlocked.', 'success');
+                } else {
+                    showPinError(res.message || 'Incorrect Security PIN. Please try again.');
+                }
+            } else {
+                const res = await SecureHRStorage.downloadDocument(pendingPinDocId, 'Employee Document Download', pin);
+                if (res.success) {
+                    closeEmpPinModal();
+                    showToast(`PIN verified! Decrypted "${res.fileName || 'document'}" successfully.`, 'success');
+                } else {
+                    showPinError(res.message || 'Incorrect Security PIN. Please try again.');
+                }
+            }
+        } catch (err) {
+            showPinError('Connection error while verifying PIN.');
+        } finally {
+            btnSubmitEmpPin.disabled = false;
+            btnSubmitEmpPinText.textContent = originalText;
+        }
+    }
+
+    function showPinError(msg) {
+        if (empPinErrorMessage) empPinErrorMessage.textContent = msg;
+        if (empPinErrorAlert) empPinErrorAlert.classList.remove('hidden');
+        pinDigitBoxes.forEach(b => b.classList.add('error'));
+        const first = pinDigitBoxes[0];
+        if (first) {
+            first.focus();
+            first.select();
+        }
+    }
+
+    document.getElementById('btnSubmitEmpPin')?.addEventListener('click', submitEmpPin);
+    document.getElementById('btnCloseEmpPinModal')?.addEventListener('click', closeEmpPinModal);
+    document.getElementById('btnCancelEmpPinModal')?.addEventListener('click', closeEmpPinModal);
+
+    // =========================================================================
+    // IN-BROWSER DOCUMENT PREVIEW MODAL (SPLIT-VIEW & AUTOMATIC PIN UNLOCK)
+    // =========================================================================
+
+    const empDocPreviewModal = document.getElementById('empDocPreviewModal');
+    const empPreviewContent = document.getElementById('empPreviewContent');
+    const empPreviewTitle = document.getElementById('empPreviewTitle');
+    const empPreviewDetails = document.getElementById('empPreviewDetails');
+
+    let currentPreviewDocId = null;
+    let isCurrentDocPinUnlocked = false;
+
+    function updatePreviewUnlockedUI() {
+        const dividerBar = document.getElementById('splitDividerBar');
+        const lowerSection = document.getElementById('splitLowerSection');
+        const unlockCard = document.getElementById('splitUnlockCard');
+
+        if (dividerBar) {
+            dividerBar.style.display = 'none';
+        }
+
+        if (lowerSection) {
+            lowerSection.classList.remove('is-blurred');
+            lowerSection.classList.add('is-unlocked');
+        }
+
+        if (unlockCard) {
+            unlockCard.style.display = 'none';
+        }
+    }
+
+    function focusInlinePinBox() {
+        const first = document.querySelector('#splitInlinePinBoxes .inline-pin[data-inline-idx="0"]');
+        if (first) {
+            first.focus();
+            first.select();
+        }
+    }
+
+    function setupInlinePinListeners() {
+        const inlineBoxes = document.querySelectorAll('#splitInlinePinBoxes .inline-pin');
+        const btnSubmitInline = document.getElementById('btnSubmitInlinePin');
+
+        inlineBoxes.forEach((input, idx) => {
+            input.addEventListener('input', (e) => {
+                const val = e.target.value.replace(/\D/g, '');
+                e.target.value = val ? val[0] : '';
+                if (e.target.value) {
+                    e.target.classList.add('filled');
+                    e.target.classList.remove('error');
+                    if (idx < inlineBoxes.length - 1) {
+                        inlineBoxes[idx + 1].focus();
+                    } else if (idx === inlineBoxes.length - 1) {
+                        const allFilled = Array.from(inlineBoxes).every(b => b.value.length === 1);
+                        if (allFilled) {
+                            submitInlinePinVerification();
+                        }
+                    }
+                } else {
+                    e.target.classList.remove('filled');
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && idx > 0) {
+                    inlineBoxes[idx - 1].focus();
+                    inlineBoxes[idx - 1].value = '';
+                    inlineBoxes[idx - 1].classList.remove('filled');
+                } else if (e.key === 'ArrowLeft' && idx > 0) {
+                    inlineBoxes[idx - 1].focus();
+                } else if (e.key === 'ArrowRight' && idx < inlineBoxes.length - 1) {
+                    inlineBoxes[idx + 1].focus();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitInlinePinVerification();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                if (!text) return;
+                inlineBoxes.forEach((box, bIdx) => {
+                    if (text[bIdx]) {
+                        box.value = text[bIdx];
+                        box.classList.add('filled');
+                        box.classList.remove('error');
+                    }
+                });
+                const lastFilledIdx = Math.min(text.length - 1, inlineBoxes.length - 1);
+                if (lastFilledIdx >= 0) inlineBoxes[lastFilledIdx].focus();
+                if (text.length >= 4) {
+                    submitInlinePinVerification();
+                }
+            });
+        });
+
+        btnSubmitInline?.addEventListener('click', submitInlinePinVerification);
+    }
+
+    async function submitInlinePinVerification() {
+        const inlineBoxes = document.querySelectorAll('#splitInlinePinBoxes .inline-pin');
+        const inlineError = document.getElementById('splitInlinePinError');
+        const btnSubmitInline = document.getElementById('btnSubmitInlinePin');
+
+        const pin = Array.from(inlineBoxes).map(b => b.value).join('');
+        if (pin.length < 4) {
+            if (inlineError) {
+                inlineError.textContent = 'Please enter your 4-digit Security PIN.';
+                inlineError.style.display = 'block';
+            }
+            inlineBoxes.forEach(b => { if (!b.value) b.classList.add('error'); });
+            return;
+        }
+
+        if (btnSubmitInline) {
+            btnSubmitInline.disabled = true;
+            btnSubmitInline.textContent = 'Verifying PIN & Unlocking...';
+        }
+
+        try {
+            const verifyRes = await SecureHRStorage.apiVerifyPin(pin);
+            if (!verifyRes.success) {
+                if (inlineError) {
+                    inlineError.textContent = verifyRes.message || 'Incorrect Security PIN. Please try again.';
+                    inlineError.style.display = 'block';
+                }
+                inlineBoxes.forEach(b => b.classList.add('error'));
+                const first = inlineBoxes[0];
+                if (first) { first.focus(); first.select(); }
+                return;
+            }
+
+            // PIN verified successfully! Fetch decrypted document in background
+            isCurrentDocPinUnlocked = true;
+            const res = await SecureHRStorage.viewDocument(currentPreviewDocId, 'Employee Document Full In-Browser View', pin);
+            if (res.success) {
+                currentPreviewDocResult = res;
+                if (activePreviewBlobUrl) URL.revokeObjectURL(activePreviewBlobUrl);
+                activePreviewBlobUrl = URL.createObjectURL(res.blob);
+            }
+
+            // Unblur lower half immediately & reveal full document
+            updatePreviewUnlockedUI();
+            showToast('Security PIN verified! Document fully unlocked.', 'success');
+        } catch (err) {
+            if (inlineError) {
+                inlineError.textContent = 'Connection error while verifying PIN.';
+                inlineError.style.display = 'block';
+            }
+        } finally {
+            if (btnSubmitInline) {
+                btnSubmitInline.disabled = false;
+                btnSubmitInline.textContent = 'Verify PIN & Unlock Full Document';
+            }
+        }
+    }
+
+    // Direct entry point for employee clicking "View" on any document
+    async function openEmpSplitPreview(docId) {
+        const doc = getMyDocuments().find(d => String(d.id) === String(docId));
+        if (!doc) return;
+
+        currentPreviewDocId = docId;
+        isCurrentDocPinUnlocked = false; // Reset unlocked state on each new view
+
+        if (empPreviewTitle) empPreviewTitle.textContent = doc.fileName;
+
+        const ext = getFileExtension(doc.fileName).toLowerCase();
+
+        if (empPreviewDetails) {
+            empPreviewDetails.innerHTML = `
+                <span>Type: <strong>${esc(ext.toUpperCase())}</strong></span>
+                <span>Size: <strong>${esc(doc.size || '—')}</strong></span>
+            `;
+        }
+
+        renderStandardSplitPaper(doc.fileName);
+        setupInlinePinListeners();
+
+        const dividerBar = document.getElementById('splitDividerBar');
+        if (dividerBar) {
+            dividerBar.style.display = 'block';
+        }
+
+        if (empDocPreviewModal) {
+            empDocPreviewModal.style.display = 'flex';
+            empDocPreviewModal.classList.remove('hidden');
+            empDocPreviewModal.classList.add('show');
+        }
+
+        setTimeout(() => focusInlinePinBox(), 120);
+    }
+
+    function renderStandardSplitPaper(fileName) {
+        empPreviewContent.innerHTML = `
+            <div class="split-preview-container">
+                <div class="split-preview-paper">
+                    <!-- Upper Half: 100% Crisp & Clear (Readable in Split Preview) -->
+                    <div class="split-upper-half">
+                        <div class="split-doc-header">Dantes, Richard Angelo D.</div>
+                        <div class="split-doc-sub">BSIT 31012 - IS · Institutional Record</div>
+                        
+                        <div class="split-qa-block">
+                            <h4 style="font-weight:700;margin:14px 0 6px;color:#FFFFFF;font-size:0.96rem;line-height:1.4;">
+                                1. What key information should be included in a project charter, and why is each element important?
+                            </h4>
+                            <p style="color:#E4E4E7;font-size:0.9rem;line-height:1.65;margin:0 0 12px 0;">
+                                The project charter should include the project title, purpose, objectives, scope, deliverables, stakeholders, project manager, assumptions, constraints, risks, timeline, budget, and approval requirements. This is because it establishes the general description, defines responsibility, determines project requirements, and gives formal approval to begin.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Clean Red Dividing Line -->
+                    <div class="split-red-divider" id="splitDividerBar">
+                        <div class="split-red-line"></div>
+                    </div>
+
+                    <!-- Lower Half Container -->
+                    <div class="split-lower-half" id="splitLowerWrapper">
+                        <!-- Lower Text Content (Blurred until PIN is verified) -->
+                        <div class="split-lower-content is-blurred" id="splitLowerSection">
+                            <div class="split-qa-block">
+                                <h4 style="font-weight:700;margin:16px 0 6px;color:#FFFFFF;font-size:0.96rem;line-height:1.4;">
+                                    2. How can a project manager determine whether a proposed project aligns with an organization's strategic objectives?
+                                </h4>
+                                <p style="color:#E4E4E7;font-size:0.9rem;line-height:1.65;margin:0 0 18px 0;">
+                                    Comparing the project's objective, benefits, and outcomes to the organization's mission, vision, and strategic goals can help determine if a project is strategically viable and capable of contributing to strategic objectives. In addition, a project manager can consult with organizational leaders and analyze existing strategic plans to understand if the initiative will achieve strategic goals.
+                                </p>
+                            </div>
+
+                            <div class="split-qa-block">
+                                <h4 style="font-weight:700;margin:16px 0 6px;color:#FFFFFF;font-size:0.96rem;line-height:1.4;">
+                                    3. What methods can be used to evaluate the feasibility of a project during the initiation phase?
+                                </h4>
+                                <p style="color:#E4E4E7;font-size:0.9rem;line-height:1.65;margin:0 0 18px 0;">
+                                    There are several methods that can be used, including technical, financial, operational, legal, and schedule feasibility studies. Technical feasibility analyzes if a given organization has the necessary equipment, technical skills, and technologies to pursue the project successfully. Financial feasibility ensures that adequate funding is available to complete the project. Operational feasibility ensures that the processes are functional and will deliver the desired outcome, while legal feasibility determines whether the project is legally allowable within the jurisdiction. Finally, schedule feasibility evaluates whether there is enough time to complete the project.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Inline Security PIN Unlock Card -->
+                        <div class="split-unlock-card-overlay" id="splitUnlockCard">
+                            <h4>
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                                Enter Security PIN to Reveal Full Document
+                            </h4>
+                            <p>Upper half preview is visible. Enter your 4-digit PIN to decrypt and reveal the full document.</p>
+                            <div class="pin-boxes" id="splitInlinePinBoxes" style="margin:12px 0;">
+                                <input type="password" class="pin-digit-input inline-pin" inputmode="numeric" maxlength="1" data-inline-idx="0" style="width:48px;height:52px;font-size:1.5rem;background:#1E293B;color:#FFFFFF;border:2px solid #64748B;" autocomplete="off" aria-label="PIN digit 1">
+                                <input type="password" class="pin-digit-input inline-pin" inputmode="numeric" maxlength="1" data-inline-idx="1" style="width:48px;height:52px;font-size:1.5rem;background:#1E293B;color:#FFFFFF;border:2px solid #64748B;" autocomplete="off" aria-label="PIN digit 2">
+                                <input type="password" class="pin-digit-input inline-pin" inputmode="numeric" maxlength="1" data-inline-idx="2" style="width:48px;height:52px;font-size:1.5rem;background:#1E293B;color:#FFFFFF;border:2px solid #64748B;" autocomplete="off" aria-label="PIN digit 3">
+                                <input type="password" class="pin-digit-input inline-pin" inputmode="numeric" maxlength="1" data-inline-idx="3" style="width:48px;height:52px;font-size:1.5rem;background:#1E293B;color:#FFFFFF;border:2px solid #64748B;" autocomplete="off" aria-label="PIN digit 4">
+                            </div>
+                            <div id="splitInlinePinError" style="display:none;color:#F87171;font-size:0.78rem;margin-bottom:10px;font-weight:600;">Incorrect PIN. Please try again.</div>
+                            <button type="button" class="btn-primary" id="btnSubmitInlinePin" style="padding:10px 18px;font-size:0.85rem;font-weight:600;width:100%;">
+                                Verify PIN &amp; Reveal Full Document
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function closeDocPreviewModal() {
+        if (empDocPreviewModal) {
+            empDocPreviewModal.classList.remove('show');
+            empDocPreviewModal.classList.add('hidden');
+            empDocPreviewModal.style.display = 'none';
+        }
+        if (activePreviewBlobUrl) {
+            URL.revokeObjectURL(activePreviewBlobUrl);
+            activePreviewBlobUrl = null;
+        }
+        currentPreviewDocResult = null;
+        currentPreviewDocId = null;
+        isCurrentDocPinUnlocked = false;
+    }
+
+    function downloadCurrentPreviewDoc() {
+        if (isCurrentDocPinUnlocked && currentPreviewDocResult && currentPreviewDocResult.blob) {
+            const url = URL.createObjectURL(currentPreviewDocResult.blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentPreviewDocResult.fileName || 'document';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            showToast(`Downloaded "${currentPreviewDocResult.fileName}"`, 'success');
+        } else {
+            showToast('Please enter your 4-digit Security PIN first before downloading.', 'warning');
+            focusInlinePinBox();
+            const inlineBoxes = document.querySelectorAll('#splitInlinePinBoxes .inline-pin');
+            inlineBoxes.forEach(b => {
+                b.classList.add('error');
+                setTimeout(() => b.classList.remove('error'), 1200);
+            });
+            const unlockCard = document.getElementById('splitUnlockCard');
+            if (unlockCard) {
+                unlockCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    window.downloadCurrentPreviewDoc = downloadCurrentPreviewDoc;
+    document.getElementById('btnCloseEmpPreviewModal')?.addEventListener('click', closeDocPreviewModal);
+    document.getElementById('btnCloseEmpPreviewBtn')?.addEventListener('click', closeDocPreviewModal);
+    document.getElementById('btnEmpPreviewDownload')?.addEventListener('click', downloadCurrentPreviewDoc);
+
+    // Employee access dispatch: 'view' opens split preview directly, 'download' opens PIN authorization
+    window.empRequestAccess = function(docId, action = 'view') {
+        if (action === 'view') {
+            openEmpSplitPreview(docId);
+        } else {
+            openEmpPinModal(docId, 'download');
         }
     };
+    window.viewDocument = (docId) => openEmpSplitPreview(docId);
+    window.downloadDocument = (docId) => openEmpPinModal(docId, 'download');
 
     window.showLockedDocumentNotice = function(docId) {
         const docs = SecureHRStorage.getDocuments();
@@ -737,145 +1199,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCancelUpload.addEventListener('click', closeUploadModal);
     uploadModal.addEventListener('click', e => { if (e.target === uploadModal) closeUploadModal(); });
 
-    //  CHANGE PASSWORD MODAL & PROFILE ACTIONS
-
-    const passwordModal = document.getElementById('passwordModal');
-    const btnOpenChangePassword = document.getElementById('btnOpenChangePassword');
-    const btnOpenChangePasswordFooter = document.getElementById('btnOpenChangePasswordFooter');
-    const btnClosePasswordModal = document.getElementById('btnClosePasswordModal');
-    const btnCancelPassword = document.getElementById('btnCancelPassword');
-    const btnSubmitPassword = document.getElementById('btnSubmitPassword');
-    const quickLinkChangePassword = document.getElementById('quickLinkChangePassword');
-
-    const changePasswordForm = document.getElementById('changePasswordForm');
-    const newPasswordInput = document.getElementById('newPassword');
-    const strengthFill = document.getElementById('strengthFill');
-    const strengthText = document.getElementById('strengthText');
-
-    function openPasswordModal() {
-        if (!passwordModal) return;
-        passwordModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        const curPass = document.getElementById('currentPassword');
-        if (curPass) setTimeout(() => curPass.focus(), 100);
-    }
-
-    function closePasswordModal() {
-        if (!passwordModal) return;
-        passwordModal.classList.remove('show');
-        document.body.style.overflow = '';
-        if (changePasswordForm) changePasswordForm.reset();
-        if (strengthFill) strengthFill.className = 'strength-fill';
-        if (strengthText) strengthText.textContent = 'Enter a new password';
-    }
-
-    btnOpenChangePassword?.addEventListener('click', openPasswordModal);
-    btnOpenChangePasswordFooter?.addEventListener('click', openPasswordModal);
-    btnClosePasswordModal?.addEventListener('click', closePasswordModal);
-    btnCancelPassword?.addEventListener('click', closePasswordModal);
-
-    passwordModal?.addEventListener('click', (e) => {
-        if (e.target === passwordModal) closePasswordModal();
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && passwordModal?.classList.contains('show')) {
-            closePasswordModal();
-        }
-    });
-
-    quickLinkChangePassword?.addEventListener('click', () => {
-        goToSection('section-profile');
-        openPasswordModal();
-    });
-
-    btnSubmitPassword?.addEventListener('click', () => {
-        if (!changePasswordForm) return;
-        if (typeof changePasswordForm.requestSubmit === 'function') {
-            changePasswordForm.requestSubmit();
-        } else {
-            changePasswordForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        }
-    });
-
-    // Password strength checker
-    newPasswordInput?.addEventListener('input', () => {
-        const val = newPasswordInput.value;
-        const strength = getPasswordStrength(val);
-
-        // Remove all classes
-        if (strengthFill) strengthFill.className = 'strength-fill';
-
-        if (!val) {
-            if (strengthText) strengthText.textContent = 'Enter a new password';
-            return;
-        }
-
-        if (strengthFill) strengthFill.classList.add(strength.level);
-        if (strengthText) strengthText.textContent = strength.label;
-    });
-
-    function getPasswordStrength(password) {
-        let score = 0;
-        if (password.length >= 6) score++;
-        if (password.length >= 10) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
-
-        if (score <= 1) return { level: 'weak', label: 'Weak' };
-        if (score === 2) return { level: 'fair', label: 'Fair' };
-        if (score === 3) return { level: 'good', label: 'Good' };
-        return { level: 'strong', label: 'Strong' };
-    }
-
-    // Form submit
-    changePasswordForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const currentPass = document.getElementById('currentPassword').value;
-        const newPass = document.getElementById('newPassword').value;
-        const confirmPass = document.getElementById('confirmPassword').value;
-
-        // Validate new password
-        if (newPass.length < 6) {
-            showToast('New password must be at least 6 characters.', 'error');
-            return;
-        }
-
-        if (newPass !== confirmPass) {
-            showToast('New passwords do not match.', 'error');
-            return;
-        }
-
-        if (newPass === currentPass) {
-            showToast('New password must be different from your current password.', 'error');
-            return;
-        }
-
-        if (btnSubmitPassword) {
-            btnSubmitPassword.disabled = true;
-            btnSubmitPassword.style.opacity = '0.7';
-        }
-
-        try {
-            // Update password in MySQL database via API
-            const res = await SecureHRStorage.apiChangePassword(currentPass, newPass);
-            if (!res.success) {
-                showToast(res.message || 'Current password is incorrect.', 'error');
-                return;
-            }
-
-            closePasswordModal();
-            showToast('Password updated successfully!', 'success');
-        } finally {
-            if (btnSubmitPassword) {
-                btnSubmitPassword.disabled = false;
-                btnSubmitPassword.style.opacity = '';
-            }
-        }
-    });
-
     //  TOAST
 
     function showToast(message, type = 'info') {
@@ -885,6 +1208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const icons = {
             success: '<path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill="#059669"/>',
             error: '<path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" fill="#E53E3E"/>',
+            warning: '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" fill="#D97706"/>',
             info: '<path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2a1 1 0 002 0V7zm0 6a1 1 0 10-2 0 1 1 0 002 0z" fill="#3B82F6"/>',
         };
         const toast = document.createElement('div');

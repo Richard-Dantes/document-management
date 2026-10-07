@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SecureHR Employee Dashboard — View your documents and profile at Bestlink College of the Philippines.">
-    <title>SecureHR — Employee Dashboard | Bestlink College of the Philippines</title>
+    <meta name="description" content="Employee Dashboard">
+    <title>Employee Dashboard | Bestlink College of the Philippines</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -132,31 +132,17 @@
                             <p>My Documents</p>
                         </div>
                     </div>
-                    <div class="stat-card" data-section="section-profile" role="button" tabindex="0">
+                    <div class="stat-card" data-section="section-profile" role="button" tabindex="0" style="flex: 2;">
                         <div class="stat-icon green">
-                            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
                         <div class="stat-info">
-                            <h3 id="statStatus">Active</h3>
-                            <p>Account Status</p>
-                        </div>
-                    </div>
-                    <div class="stat-card" data-section="section-profile" role="button" tabindex="0">
-                        <div class="stat-icon purple">
-                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="statDepartment">—</h3>
-                            <p>Department</p>
-                        </div>
-                    </div>
-                    <div class="stat-card" data-section="section-profile" role="button" tabindex="0">
-                        <div class="stat-icon orange">
-                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="statEmpId">—</h3>
-                            <p>Employee ID</p>
+                            <h3>Profile Info</h3>
+                            <p style="font-size: 0.85rem; margin-top: 4px;">
+                                ID: <span id="statEmpId" style="font-weight: 600; color: var(--gray-800);">—</span> &nbsp;&bull;&nbsp; 
+                                Dept: <span id="statDepartment" style="font-weight: 600; color: var(--gray-800);">—</span> &nbsp;&bull;&nbsp; 
+                                Status: <span id="statStatus" style="font-weight: 600; color: var(--green-600);">Active</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -175,10 +161,6 @@
                             <button type="button" class="quick-link" data-section="section-profile">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#10B981"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                                 <span style="font-size:0.88rem;color:var(--gray-700);font-weight:500;">Check <strong>My Profile</strong> to review your personal information.</span>
-                            </button>
-                            <button type="button" class="quick-link" id="quickLinkChangePassword">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="#F97316"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-                                <span style="font-size:0.88rem;color:var(--gray-700);font-weight:500;">Account security &amp; <strong>Change Password</strong> via My Profile.</span>
                             </button>
                         </div>
                     </div>
@@ -252,7 +234,6 @@
                                     <th class="sortable" data-sort="name">Document <span class="sort-arrow">↕</span></th>
                                     <th class="sortable" data-sort="category">Category <span class="sort-arrow">↕</span></th>
                                     <th>Verification</th>
-                                    <th>Record Policy</th>
                                     <th class="sortable" data-sort="size">Size <span class="sort-arrow">↕</span></th>
                                     <th class="sortable sorted-desc" data-sort="date">Date Uploaded <span class="sort-arrow">▼</span></th>
                                     <th>Actions</th>
@@ -286,10 +267,6 @@
                         <h2>My Profile</h2>
                         <p>Your personal information as recorded by HR. Contact your administrator to make changes.</p>
                     </div>
-                    <button type="button" class="btn-primary" id="btnOpenChangePassword" style="display:inline-flex;align-items:center;gap:8px;">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-                        Change Password
-                    </button>
                 </div>
 
                 <div class="content-card">
@@ -328,16 +305,22 @@
                             </div>
                         </div>
 
-                        <!-- Profile Security & Password Action Row -->
+                        <!-- Document Security PIN (managed by HR/System Admin) -->
                         <div class="profile-footer" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-                            <div>
-                                <div style="font-weight:600;color:var(--gray-800);font-size:0.95rem;">Security Credentials</div>
-                                <div style="font-size:0.82rem;color:var(--gray-500);margin-top:2px;">Protect your account credentials by updating your password regularly.</div>
+                            <div style="display:flex;align-items:flex-start;gap:12px;">
+                                <div style="width:38px;height:38px;border-radius:10px;background:rgba(59,130,246,0.12);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                                </div>
+                                <div>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <div style="font-weight:600;color:var(--gray-800);font-size:0.95rem;">Document Security PIN</div>
+                                        <span class="status-badge verified" style="font-size:0.7rem;padding:2px 8px;">Active</span>
+                                    </div>
+                                    <div style="font-size:0.82rem;color:var(--gray-500);margin-top:2px;">
+                                        A 4-digit PIN is required whenever you view or download your personnel files. Your password and PIN are managed by your HR Administrator.
+                                    </div>
+                                </div>
                             </div>
-                            <button type="button" class="btn-secondary" id="btnOpenChangePasswordFooter" style="display:inline-flex;align-items:center;gap:8px;">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-                                Change Password
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -399,9 +382,9 @@
                 <div style="padding:12px 14px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:var(--radius-md);font-size:0.78rem;color:var(--gray-700);line-height:1.5;">
                     <div style="display:flex;align-items:center;gap:6px;font-weight:700;color:#1D4ED8;margin-bottom:4px;">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                        <span>Institutional Verification Policy</span>
+                        <span>Verification Policy</span>
                     </div>
-                    New uploads are placed in <strong>Pending</strong> status until verified by HR Administration. Once verified or when officially issued by HR, records are locked from deletion for data compliance and integrity.
+                    New uploads are placed in <strong>Pending</strong> status until verified by HR.
                 </div>
 
             </form>
@@ -411,52 +394,6 @@
             <button class="btn-primary" id="btnSubmitUpload">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
                 Upload
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- CHANGE PASSWORD MODAL -->
-<div class="modal-overlay" id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 id="passwordModalTitle">Change Password</h3>
-            <button class="modal-close" id="btnClosePasswordModal" aria-label="Close modal">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            </button>
-        </div>
-        <div class="modal-body">
-            <p style="font-size:0.85rem;color:var(--gray-600);margin-bottom:16px;line-height:1.5;">
-                Update your login credentials. Use a strong password containing letters, numbers, and symbols to keep your Bestlink College account secure.
-            </p>
-            <form class="password-form" id="changePasswordForm" novalidate style="max-width:100%;">
-                <div class="form-group">
-                    <label class="form-label" for="currentPassword">Current Password <span style="color:var(--error)">*</span></label>
-                    <input type="password" class="form-input" id="currentPassword" placeholder="Enter your current password" required autocomplete="current-password">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="newPassword">New Password <span style="color:var(--error)">*</span></label>
-                    <input type="password" class="form-input" id="newPassword" placeholder="Enter new password (min 6 characters)" required autocomplete="new-password">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="confirmPassword">Confirm New Password <span style="color:var(--error)">*</span></label>
-                    <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter new password" required autocomplete="new-password">
-                </div>
-
-                <!-- Password Strength Indicator -->
-                <div class="password-strength" id="passwordStrength">
-                    <div class="strength-bar">
-                        <div class="strength-fill" id="strengthFill"></div>
-                    </div>
-                    <span class="strength-text" id="strengthText">Enter a new password</span>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" id="btnCancelPassword" type="button">Cancel</button>
-            <button class="btn-primary" id="btnSubmitPassword" type="button">
-                <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
-                Update Password
             </button>
         </div>
     </div>
@@ -544,7 +481,7 @@
         <div class="modal-header">
             <div>
                 <h3 id="empDocDetailTitle">Document Details</h3>
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-top:2px;">Institutional record metadata &amp; verification status</p>
+                <p style="font-size:0.8rem;color:var(--gray-500);margin-top:2px;">Document details and status</p>
             </div>
             <button class="modal-close" id="btnCloseEmpDocDetailModal" aria-label="Close modal">&times;</button>
         </div>
@@ -552,7 +489,6 @@
             <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:var(--radius-md); padding:16px; margin-bottom:16px;">
                 <div style="font-size:1.05rem; font-weight:700; color:var(--primary-dark); word-break:break-all; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
                     <span id="empDetailFileName">—</span>
-                    <span class="aes-badge" title="Encrypted at rest using AES-256-GCM">AES-256</span>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; font-size:0.85rem; margin-top:12px;">
                     <div>
@@ -562,10 +498,6 @@
                     <div>
                         <span style="color:var(--gray-500); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">Verification Status</span>
                         <strong id="empDetailStatus" style="color:var(--gray-900);">—</strong>
-                    </div>
-                    <div>
-                        <span style="color:var(--gray-500); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">Record Policy</span>
-                        <strong id="empDetailPolicy" style="color:var(--gray-900);">—</strong>
                     </div>
                     <div>
                         <span style="color:var(--gray-500); display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">Date Uploaded</span>
@@ -581,10 +513,115 @@
         </div>
         <div class="modal-footer" style="justify-content: flex-end; gap: 10px;">
             <button class="btn-secondary" id="btnCloseEmpDocDetailBtn" type="button">Close</button>
-            <button class="btn-primary" id="btnEmpDownloadFromDetail" type="button">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
-                Download Document
+            <button class="btn-primary" id="btnEmpViewFromDetail" type="button" style="display:inline-flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                View Document
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- SECURITY PIN MODAL FOR VIEW / DOWNLOAD -->
+<div class="modal-overlay hidden" id="empPinModal" role="dialog" aria-modal="true" aria-labelledby="empPinModalTitle" style="display:none;">
+    <div class="modal pin-modal-card" style="max-width: 440px;">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="pin-shield-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                </div>
+                <div>
+                    <h3 id="empPinModalTitle" style="font-size:1.1rem;margin:0;">Security PIN Required</h3>
+                    <p style="font-size:0.75rem;color:var(--gray-500);margin:2px 0 0;">Personnel Document Access Protection</p>
+                </div>
+            </div>
+            <button class="modal-close" id="btnCloseEmpPinModal" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="empPinTargetDocId">
+            <input type="hidden" id="empPinTargetAction" value="download"> <!-- 'download' or 'view' -->
+
+            <!-- Document Target Preview Card -->
+            <div class="pin-doc-summary" id="empPinDocCard">
+                <div class="pin-doc-type-badge" id="empPinDocBadge">PDF</div>
+                <div style="flex:1;min-width:0;">
+                    <div class="pin-doc-title" id="empPinDocName">Document.pdf</div>
+                    <div class="pin-doc-subtitle" id="empPinDocMeta">Assigned to you · AES-256-GCM Encrypted</div>
+                </div>
+            </div>
+
+            <p style="font-size:0.84rem;color:var(--gray-600);margin:14px 0 12px;line-height:1.5;">
+                Enter your <strong>4-digit Security PIN</strong> to authorize access and decrypt this document:
+            </p>
+
+            <form id="empPinForm" onsubmit="return false;" novalidate>
+                <!-- 4 Digit PIN Input Container -->
+                <div class="pin-entry-container">
+                    <div class="pin-boxes" id="pinDigitBoxes">
+                        <input type="password" class="pin-digit-input" inputmode="numeric" maxlength="1" data-index="0" autocomplete="off" aria-label="PIN digit 1">
+                        <input type="password" class="pin-digit-input" inputmode="numeric" maxlength="1" data-index="1" autocomplete="off" aria-label="PIN digit 2">
+                        <input type="password" class="pin-digit-input" inputmode="numeric" maxlength="1" data-index="2" autocomplete="off" aria-label="PIN digit 3">
+                        <input type="password" class="pin-digit-input" inputmode="numeric" maxlength="1" data-index="3" autocomplete="off" aria-label="PIN digit 4">
+                    </div>
+                    <button type="button" class="pin-visibility-toggle" id="btnTogglePinVisibility" title="Show or hide PIN">
+                        <svg class="eye-open" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <svg class="eye-closed" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="display:none;"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+                    </button>
+                </div>
+
+                <!-- Error Alert -->
+                <div class="pin-error-banner hidden" id="empPinErrorAlert">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    <span id="empPinErrorMessage">Incorrect Security PIN. Please try again.</span>
+                </div>
+
+                <div class="pin-demo-hint">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                    <span>Forgot your PIN? Your HR Administrator can reset it for you.</span>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer" style="justify-content: flex-end; gap: 10px;">
+            <button class="btn-secondary" id="btnCancelEmpPinModal" type="button">Cancel</button>
+            <button class="btn-primary" id="btnSubmitEmpPin" type="button">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                <span id="btnSubmitEmpPinText">Authorize &amp; Decrypt</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- IN-BROWSER DOCUMENT PREVIEW / VIEWER MODAL -->
+<div class="modal-overlay hidden" id="empDocPreviewModal" role="dialog" aria-modal="true" aria-labelledby="empPreviewTitle" style="display:none;">
+    <div class="modal preview-modal-card" style="max-width: 960px; width: 95vw; height: 88vh; display:flex; flex-direction:column;">
+        <div class="modal-header" style="flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+                <h3 id="empPreviewTitle" style="font-size:1.05rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Document Preview</h3>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn-primary" id="btnEmpPreviewDownload" type="button" style="padding:6px 14px;font-size:0.8rem;display:flex;align-items:center;gap:6px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Download Decrypted File
+                </button>
+                <button class="modal-close" id="btnCloseEmpPreviewModal" aria-label="Close viewer">&times;</button>
+            </div>
+        </div>
+        <div class="modal-body" style="flex:1;overflow:hidden;padding:0;display:flex;flex-direction:column;background:var(--gray-100);">
+            <div class="preview-toolbar" id="empPreviewMetaBar" style="padding:8px 16px;background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.8rem;color:var(--gray-600);">
+                <div id="empPreviewDetails" style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;"></div>
+                <div style="font-size:0.75rem;color:var(--gray-500);display:flex;align-items:center;gap:6px;">
+                    <span>AES-256-GCM Decrypted in Session</span>
+                </div>
+            </div>
+            <div class="preview-render-area" id="empPreviewContent" style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px;background:#0F172A;">
+                <!-- Content loaded dynamically: split preview paper, img, or docx -->
+            </div>
+        </div>
+        <div class="modal-footer" style="flex-shrink:0;justify-content:space-between;">
+            <div style="font-size:0.78rem;color:var(--gray-500);display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#10B981"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                Bestlink College of the Philippines · SecureHR Document Security
+            </div>
+            <button class="btn-secondary" id="btnCloseEmpPreviewBtn" type="button">Close Viewer</button>
         </div>
     </div>
 </div>

@@ -657,19 +657,21 @@ input, select, textarea {
     top: 24px;
     right: 24px;
     padding: 14px 24px;
-    background: var(--white);
+    background: #FFFFFF;
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 16px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     gap: 12px;
     font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--gray-700);
-    z-index: 1000;
+    font-weight: 600;
+    color: var(--gray-800);
+    z-index: 999999 !important;
     transform: translateX(120%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-left: 4px solid var(--accent);
+    border-left: 5px solid var(--accent);
+    max-width: 480px;
+    pointer-events: auto;
 }
 
 .toast.show {
@@ -677,11 +679,19 @@ input, select, textarea {
 }
 
 .toast.error {
-    border-left-color: var(--error);
+    border-left-color: #EF4444;
 }
 
 .toast.success {
-    border-left-color: var(--success);
+    border-left-color: #10B981;
+}
+
+.toast.warning {
+    border-left-color: #F59E0B;
+}
+
+.toast.info {
+    border-left-color: #3B82F6;
 }
 
 /* Responsive */

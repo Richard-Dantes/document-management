@@ -32,15 +32,6 @@ async function testDatabaseConnection() {
 
 testDatabaseConnection();
 
-async function getEmployeeFromDatabase(id) {
-  const [rows] = await db.query(
-    'SELECT * FROM employees WHERE id = ? LIMIT 1',
-    [id]
-  );
-
-  return rows.length > 0 ? rows[0] : null;
-}
-
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
@@ -322,7 +313,6 @@ const employees = new Map([
       permissions: Object.assign({}, ROLE_PERMISSIONS.system_admin),
       status: 'active',
       password: bcrypt.hashSync('admin123', 10),
-      pin: bcrypt.hashSync('1234', 10),
       date_added: '2026-01-01',
     },
   ],
@@ -339,7 +329,6 @@ const employees = new Map([
       permissions: Object.assign({}, ROLE_PERMISSIONS.hr_admin),
       status: 'active',
       password: bcrypt.hashSync('admin123', 10),
-      pin: bcrypt.hashSync('1234', 10),
       date_added: '2026-01-15',
     },
   ],
@@ -356,7 +345,6 @@ const employees = new Map([
       permissions: Object.assign({}, ROLE_PERMISSIONS.hr_staff),
       status: 'active',
       password: bcrypt.hashSync('employee123', 10),
-      pin: bcrypt.hashSync('1234', 10),
       date_added: '2026-08-01',
     },
   ],
@@ -373,7 +361,6 @@ const employees = new Map([
       permissions: Object.assign({}, ROLE_PERMISSIONS.hr_staff),
       status: 'active',
       password: bcrypt.hashSync('employee123', 10),
-      pin: bcrypt.hashSync('1234', 10),
       date_added: '2026-08-05',
     },
   ],
@@ -390,7 +377,6 @@ const employees = new Map([
       permissions: Object.assign({}, ROLE_PERMISSIONS.hr_staff),
       status: 'inactive',
       password: bcrypt.hashSync('employee123', 10),
-      pin: bcrypt.hashSync('1234', 10),
       date_added: '2026-07-20',
     },
   ],
@@ -407,7 +393,6 @@ const employees = new Map([
       permissions: Object.assign({}, ROLE_PERMISSIONS.system_admin),
       status: 'active',
       password: bcrypt.hashSync('admin123', 10),
-      pin: bcrypt.hashSync('1234', 10),
       date_added: '2026-01-01',
     },
   ],
@@ -817,25 +802,6 @@ function verifyEmployeePassword(user, password) {
   return false;
 }
 
-function verifyEmployeePin(user, pin) {
-  const pinStr = String(pin || '').trim();
-  if (!pinStr) return false;
-  const stored = user.pin || '';
-  if (!stored) {
-    // If no PIN explicitly stored, default is '1234'
-    return pinStr === '1234';
-  }
-  if (stored.startsWith('$2a$') || stored.startsWith('$2b$') || stored.startsWith('$2y$')) {
-    const normalized = stored.replace(/^\$2y\$/, '$2a$');
-    if (bcrypt.compareSync(pinStr, normalized)) return true;
-  }
-  if (stored === pinStr) {
-    user.pin = bcrypt.hashSync(pinStr, 10);
-    return true;
-  }
-  return false;
-}
-
 function requireAuth(req, res, allowedRoles = null) {
   const token = getBearerToken(req);
   if (!token) {
@@ -1126,11 +1092,6 @@ app.all('/api/auth.php', (req, res) => {
     const auth = requireAuth(req, res);
     if (!auth) return;
 
-    // Employees cannot change their own credentials; HR/System Admin manages them.
-    if (auth.normalizedRole === 'hr_staff') {
-      return sendError(res, 'Password changes are managed by your HR Administrator.', 403);
-    }
-
     const currentPassword = String(input.currentPassword || '');
     const newPassword = String(input.newPassword || '');
 
@@ -1156,31 +1117,53 @@ app.all('/api/auth.php', (req, res) => {
     return sendSuccess(res, null, 'Password updated successfully');
   }
 
-  if (action === 'verify_pin') {
-    const auth = requireAuth(req, res);
-    if (!auth) return;
-
-    const pin = String(input.pin || req.query.pin || '').trim();
-    if (!pin) {
-      return sendError(res, 'Security PIN is required', 400);
-    }
-
-    const user = employees.get(auth.id);
-    if (!user) return sendError(res, 'Employee record not found', 404);
-
-    if (!verifyEmployeePin(user, pin)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Incorrect Security PIN. Verification failed.',
-        data: { pinInvalid: true },
-      });
-    }
-
-    return sendSuccess(res, { verified: true, employeeId: auth.id }, 'Security PIN verified successfully');
-  }
-
   if (action === 'forgot_password') {
-    return sendError(res, 'Self-service password recovery is disabled. Password and PIN updates are managed directly by your HR Administrator or System Administrator.', 403);
+    const target = String(input.emailOrId || input.email || input.username || '').trim();
+    if (!target) {
+      return sendError(res, 'Please enter your registered email address or Employee ID', 400);
+    }
+
+    const tLower = target.toLowerCase();
+    let emp = null;
+    for (const e of employees.values()) {
+      if (e.email.toLowerCase() === tLower || e.id.toLowerCase() === tLower) {
+        emp = e;
+        break;
+      }
+    }
+
+    if (!emp) {
+      return sendError(res, 'No account found with the provided email or Employee ID.', 404);
+    }
+    if (emp.status !== 'active') {
+      return sendError(res, 'This account is inactive. Please contact the HR department.', 403);
+    }
+
+    const tempPassword = 'Reset#' + Math.floor(1000 + Math.random() * 9000);
+    const resetToken = crypto.randomBytes(16).toString('hex');
+    const expiresAt = new Date(Date.now() + 2 * 3600 * 1000).toISOString();
+
+    passwordResets.push({
+      email: emp.email,
+      token: resetToken,
+      temp_password: tempPassword,
+      expires_at: expiresAt,
+      used: 0,
+    });
+
+    emp.password = bcrypt.hashSync(tempPassword, 10);
+    const fullName = `${emp.first_name} ${emp.last_name}`;
+    logAudit(fullName, emp.id, 'FORGOT_PASSWORD', emp.email, `Self-service password reset requested for ${fullName} (${emp.id})`);
+
+    return sendSuccess(
+      res,
+      {
+        employeeId: emp.id,
+        email: emp.email,
+        temporaryPassword: tempPassword,
+      },
+      'A temporary password has been successfully generated!'
+    );
   }
 
   if (action === 'check') {
@@ -1204,10 +1187,10 @@ app.all('/api/auth.php', (req, res) => {
 });
 
 // ============================================================================
-// Route: /api/employees.php & /api/users.php
+// Route: /api/employees.php
 // ============================================================================
 
-app.all(['/api/employees.php', '/api/employees', '/api/users.php', '/api/users'], (req, res) => {
+app.all('/api/employees.php', (req, res) => {
   const method = req.method.toUpperCase();
   const action = String(req.query.action || '');
   const input = req.body || {};
@@ -1300,48 +1283,32 @@ app.all(['/api/employees.php', '/api/employees', '/api/users.php', '/api/users']
       return sendError(res, 'Access denied: User account provisioning and password resets are restricted to System Administrators.', 403);
     }
 
-    if (action === 'reset_password' || action === 'reset_credentials' || action === 'reset_pin') {
+    if (action === 'reset_password') {
       const id = String(input.id || '').trim();
       if (!id) return sendError(res, 'Employee ID is required', 400);
 
       const emp = employees.get(id);
       if (!emp) return sendError(res, 'Employee not found', 404);
 
-      let tempPassword = input.password ? String(input.password).trim() : '';
-      if (!tempPassword && action !== 'reset_pin') {
-        const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%';
-        tempPassword = 'Temp#';
-        for (let i = 0; i < 5; i++) {
-          tempPassword += chars[Math.floor(Math.random() * chars.length)];
-        }
+      const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%';
+      let tempPassword = 'Temp#';
+      for (let i = 0; i < 5; i++) {
+        tempPassword += chars[Math.floor(Math.random() * chars.length)];
       }
 
-      if (tempPassword) {
-        emp.password = bcrypt.hashSync(tempPassword, 10);
-      }
-
-      let newPin = input.pin ? String(input.pin).trim() : '';
-      if (!newPin && (action === 'reset_pin' || action === 'reset_credentials')) {
-        newPin = String(Math.floor(1000 + Math.random() * 9000));
-      }
-
-      if (newPin) {
-        emp.pin = bcrypt.hashSync(newPin, 10);
-      }
-
+      emp.password = bcrypt.hashSync(tempPassword, 10);
       const fullName = `${emp.first_name} ${emp.last_name}`;
-      logAudit(auth.fullName, auth.id, 'RESET_CREDENTIALS', `${fullName} (${id})`, `Admin reset credentials for ${fullName}. Password and/or PIN updated.`);
+      logAudit(auth.fullName, auth.id, 'RESET_PASSWORD', `${fullName} (${id})`, `Admin reset password for ${fullName}. Temporary password issued.`);
 
       return sendSuccess(
         res,
         {
           temporaryPassword: tempPassword,
-          securityPin: newPin,
           employeeId: id,
           employeeName: fullName,
           email: emp.email,
         },
-        `Credentials successfully updated for ${fullName}!`
+        `Password has been successfully reset for ${fullName}!`
       );
     }
 
@@ -1390,7 +1357,6 @@ app.all(['/api/employees.php', '/api/employees', '/api/users.php', '/api/users']
       permissions,
       status,
       password: bcrypt.hashSync(password, 10),
-      pin: bcrypt.hashSync(String(input.pin || '1234').trim(), 10),
       date_added: dateAdded,
     };
 
@@ -1448,10 +1414,6 @@ app.all(['/api/employees.php', '/api/employees', '/api/users.php', '/api/users']
         return sendError(res, 'Password must be at least 6 characters', 400);
       }
       curr.password = bcrypt.hashSync(password, 10);
-    }
-
-    if (input.pin !== undefined && String(input.pin).trim()) {
-      curr.pin = bcrypt.hashSync(String(input.pin).trim(), 10);
     }
 
     logAudit(auth.fullName, auth.id, 'UPDATE_USER', `${firstName} ${lastName} (${id})`, `Updated employee details: ${department}, role: ${getRoleTitle(role)}, status: ${status}`);
@@ -1700,24 +1662,6 @@ app.all('/api/documents.php', (req, res) => {
         if (auth.id !== doc.employee_id || doc.access_level === 'hr_only') {
           return sendError(res, 'You do not have permission to access this document.', 403);
         }
-
-        // Security PIN required for employee to view or download file assigned to them
-        const providedPin = String(req.headers['x-employee-pin'] || req.query.pin || '').trim();
-        const empRecord = employees.get(auth.id);
-        if (!providedPin) {
-          return res.status(401).json({
-            success: false,
-            message: 'Security PIN required to access this document. Please enter your 4-digit PIN.',
-            data: { pinRequired: true },
-          });
-        }
-        if (!empRecord || !verifyEmployeePin(empRecord, providedPin)) {
-          return res.status(403).json({
-            success: false,
-            message: 'Incorrect Security PIN. Verification failed.',
-            data: { pinInvalid: true },
-          });
-        }
       }
 
       const fileName = safeDownloadFilename(doc.file_name);
@@ -1746,10 +1690,9 @@ app.all('/api/documents.php', (req, res) => {
       const encryptedSizeDisplay = doc.encrypted_size || formatBytes(encryptedPayload.length);
 
       const downloadReason = String(req.query.reason || req.headers['x-download-reason'] || '').trim();
-      const pinPrefix = auth.normalizedRole === 'hr_staff' ? '[PIN Verified] ' : '';
       const auditDetails = downloadReason
-        ? `${pinPrefix}Verified & decrypted ${doc.category} document (v${doc.version || 1}) via AES-256-GCM. Action: ${action.toUpperCase()}. Purpose: "${downloadReason}" (${encryptedSizeDisplay} encrypted -> ${originalSizeDisplay})`
-        : `${pinPrefix}Verified & decrypted ${doc.category} document (v${doc.version || 1}) via AES-256-GCM. Action: ${action.toUpperCase()} (${encryptedSizeDisplay} encrypted -> ${originalSizeDisplay})`;
+        ? `Verified & decrypted ${doc.category} document (v${doc.version || 1}) via AES-256-GCM. Purpose: "${downloadReason}" (${encryptedSizeDisplay} encrypted -> ${originalSizeDisplay})`
+        : `Verified & decrypted ${doc.category} document (v${doc.version || 1}) via AES-256-GCM (${encryptedSizeDisplay} encrypted -> ${originalSizeDisplay})`;
 
       logAudit(
         auth.fullName,
@@ -1759,7 +1702,7 @@ app.all('/api/documents.php', (req, res) => {
         auditDetails
       );
 
-      const disposition = action === 'preview' ? 'inline' : 'attachment';
+      const disposition = 'attachment'; // Strictly delivered as secure attachment
       res.setHeader('Content-Type', storedType);
       res.setHeader('Content-Disposition', `${disposition}; filename="${fileName.replace(/["\r\n]/g, '')}"`);
       res.setHeader('Content-Length', decryptedBinary.length);

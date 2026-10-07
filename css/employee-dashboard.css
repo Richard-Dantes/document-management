@@ -531,3 +531,484 @@
         width: auto;
     }
 }
+
+/* ==========================================================================
+   Security PIN & Document Preview Modal Styles
+   ========================================================================== */
+
+.pin-shield-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.pin-shield-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.pin-doc-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: var(--radius-md, 8px);
+    margin-bottom: 6px;
+}
+
+.pin-doc-type-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: #EFF6FF;
+    color: #2563EB;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid #DBEAFE;
+    flex-shrink: 0;
+}
+
+.pin-doc-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gray-900, #0F172A);
+    word-break: break-all;
+}
+
+.pin-doc-subtitle {
+    font-size: 0.75rem;
+    color: var(--gray-500, #64748B);
+    margin-top: 2px;
+}
+
+.pin-entry-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 18px 0 14px;
+}
+
+.pin-boxes {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.pin-digit-input {
+    width: 52px;
+    height: 58px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #CBD5E1;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0F172A;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.pin-digit-input:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+}
+
+.pin-digit-input.filled {
+    border-color: #3B82F6;
+    background: #F8FAFC;
+}
+
+.pin-digit-input.error {
+    border-color: #EF4444;
+    background: #FEF2F2;
+    animation: pinShake 0.4s ease;
+}
+
+.pin-visibility-toggle {
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    color: #64748B;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.pin-visibility-toggle:hover {
+    background: #E2E8F0;
+    color: #1E293B;
+}
+
+.pin-error-banner {
+    padding: 10px 14px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    color: #DC2626;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    animation: pinShake 0.4s ease;
+}
+
+.pin-demo-hint {
+    padding: 10px 14px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 8px;
+    color: #1D4ED8;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+@keyframes pinShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* Document Preview Modal */
+.preview-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    color: #047857;
+    border-radius: var(--radius-full, 9999px);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.preview-render-area iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.preview-render-area img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.preview-render-area .docx-preview-container {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    padding: 32px 40px;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    font-family: inherit;
+    line-height: 1.6;
+    color: #1E293B;
+}
+
+/* ==========================================================================
+   Split-View Document Preview (Upper Half Clear / Red Line / Lower Blurred)
+   ========================================================================== */
+
+.split-preview-container {
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    background: #1E293B;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.split-preview-paper {
+    background: #18181B;
+    color: #F4F4F5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 36px 44px;
+    min-height: 520px;
+    position: relative;
+    box-sizing: border-box;
+    line-height: 1.65;
+}
+
+.split-preview-paper.light-mode {
+    background: #ffffff;
+    color: #1E293B;
+}
+
+/* Upper Half: 100% Crisp & Clear */
+.split-upper-half {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 12px;
+    user-select: text;
+}
+
+.split-doc-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: inherit;
+}
+
+.split-doc-sub {
+    font-size: 0.95rem;
+    color: #A1A1AA;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.split-preview-paper.light-mode .split-doc-sub {
+    color: #64748B;
+}
+
+/* Solid Red Dividing Line */
+.split-red-divider {
+    position: relative;
+    width: 100%;
+    margin: 18px 0 20px;
+    z-index: 10;
+}
+
+.split-red-line {
+    width: 100%;
+    height: 3px;
+    background: #EF4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8), 0 0 4px #EF4444;
+    border-radius: 2px;
+}
+
+.split-red-tag {
+    position: absolute;
+    top: -11px;
+    right: 16px;
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.split-red-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Lower Half: Heavy Blur & Protected */
+.split-lower-half {
+    position: relative;
+    min-height: 280px;
+}
+
+.split-lower-content {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.split-lower-content.is-blurred {
+    filter: blur(10px) grayscale(0.2);
+    opacity: 0.55;
+    user-select: none;
+    pointer-events: none;
+}
+
+.split-lower-content.is-unlocked {
+    filter: none;
+    opacity: 1;
+    user-select: text;
+    pointer-events: auto;
+}
+
+/* "BLURRED" Diagonal Security Watermark Overlay */
+.split-watermark-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.split-watermark-text {
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(239, 68, 68, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 12px;
+    transform: rotate(-18deg);
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    user-select: none;
+    font-family: 'Impact', 'Inter', sans-serif;
+    border: 4px dashed rgba(239, 68, 68, 0.5);
+    padding: 6px 36px;
+    border-radius: 12px;
+}
+
+/* Inline Security Unlock Card over the lower half (Sharp, Unblurred, Clickable) */
+.split-unlock-card-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 40;
+    width: 92%;
+    max-width: 480px;
+    background: #0F172A;
+    border: 2px solid #EF4444;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 25px rgba(239, 68, 68, 0.2);
+    text-align: center;
+    color: #ffffff;
+    pointer-events: auto !important;
+    filter: none !important;
+}
+
+.split-unlock-card-overlay h4 {
+    margin: 0 0 6px 0;
+    font-size: 1.02rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #F87171;
+}
+
+.split-unlock-card-overlay p {
+    margin: 0 0 14px 0;
+    font-size: 0.84rem;
+    color: #CBD5E1;
+    line-height: 1.45;
+}
+
+/* View Mode Switcher in Preview Toolbar */
+.preview-mode-switch {
+    display: inline-flex;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+}
+
+.preview-mode-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.preview-mode-btn.active {
+    background: #2563EB;
+    color: #ffffff;
+    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
+}
+
+.preview-mode-btn:hover:not(.active) {
+    background: #E2E8F0;
+    color: #0F172A;
+}
+
+/* Image Split Preview Styling */
+.split-image-wrapper {
+    position: relative;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #0F172A;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 16px;
+}
+
+.split-image-upper {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.split-image-lower {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    transition: filter 0.4s ease;
+}
+
+.split-image-lower.is-blurred img {
+    filter: blur(14px) contrast(0.85);
+    user-select: none;
+    pointer-events: none;
+}
